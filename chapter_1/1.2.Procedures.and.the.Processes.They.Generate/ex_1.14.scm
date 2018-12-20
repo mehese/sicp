@@ -29,8 +29,17 @@
 ;;  amount passed to the function. However if the minimum denomination would
 ;;  be higher, the stack depth would be smaller since we would decrement by
 ;;  a higher amount. So the space requirement is O(n) where n = amount/min_denom
+;;  but min_denom is a constant so, the space requirement is O(amount)
 
-;; The time complexity is a bit trickier. Some resources on the internet
-;;  point it as O(amount^number_of_denoms. My impression is that these arguments
-;;  focus on the (cc amount 1) calls for each denom. The call tree can get very
-;;  little pruning, so a full binary tree might make a better upper boundary.
+;; The time complexity is a bit trickier, the answer is O(n^k). The best written
+;;  argument I found is here. The induction goes like this
+;;    for cc(n, 1) the order is O(n) as we make 2*n/denom_1 calls
+;;    for cc(n, 2) we have n/denom_2 calls to cc(n, 1) => O(n^2)
+;;    for cc(n, 3) we have n/denom_3 calls to cc(n, 2) => O(n^3)
+;;    ...
+;;    for cc(n, k-1) we will have n/denom_k-1 calls to cc(n, k-2) => O(n^k-1)
+;;    for cc(n, k) we will have n/denom_k calls to cc(n, k-1) => O(n^k)
+
+;; http://www.billthelizard.com/2009/12/sicp-exercise-114-counting-change.html
+;; https://cs.stackexchange.com/questions/7105/time-complexity-for-count-change-procedure-in-sicp
+;; http://www.ysagade.nl/2015/04/12/sicp-change-growth/
