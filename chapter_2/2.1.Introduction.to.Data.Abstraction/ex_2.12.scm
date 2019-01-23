@@ -47,6 +47,9 @@
 (define (center i)
   (/ (+ (lower-bound i) (upper-bound i)) 2))
 
+(define (percent i)
+  (* 100 (/ (width i) (center i))))
+
 (define (make-center-percent c tol)
   (let
       ((w (/ (* tol c) 100)))
@@ -54,3 +57,10 @@
 
 (make-center-percent 5   50.0) ; ✔
 (make-center-percent 6.8 10.0) ; ✔
+(display "Check percent constructor")
+(newline)
+(percent (make-center-percent 5   50.0)) ; ✔
+(percent (make-center-percent 6.8 10.0)) ; ✔
+(percent (make-center-percent 6.8  7.0)) ; ✔
+(percent (make-center-percent 6.8  0.5)) ; ✔
+(percent (make-center-percent 6.8  0.025)) ; ✔
