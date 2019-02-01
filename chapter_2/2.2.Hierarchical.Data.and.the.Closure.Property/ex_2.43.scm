@@ -124,11 +124,17 @@
                              ;;    40 times for board-size = 3
                              ;;   341 times for board-size = 4
                              ;;  3906 times for board-size = 5
-(define start (runtime))
-(define res8 (queens-new 8))
+
+(define start-old (runtime))
+(define res-old8 (queens-old 8))
 (newline)
-(/ (- (runtime) start) 1e6) ; Doesn't take that long, 40s lol. Thinkpad is 💪 af
+(/ (- (runtime) start-old) 1e6) ;; 0.022 seconds
+
+(define start-new (runtime))
+(define res-new8 (queens-new 8))
+(newline)
+(/ (- (runtime) start-new) 1e6) ; Doesn't take that long, 40s lol. Thinkpad is 💪 af
 
 ;; Given the recursive calls T is multiplied board-size times for board-size calls
 ;;  resulting in a board-size^board-size time increase
-;; For an 8x8 board T_new ~ 8^8 T = 16777216T
+;; For an 8x8 board T_new ~ 8^8 T = 16777216T. In practice 1818x time of running the old routine
