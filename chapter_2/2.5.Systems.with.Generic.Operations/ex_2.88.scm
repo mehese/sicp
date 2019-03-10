@@ -58,6 +58,7 @@
   (put 'sub '(scheme-number scheme-number) -)
   (put 'mul '(scheme-number scheme-number) *)
   (put 'div '(scheme-number scheme-number) /)
+  (put 'neg '(scheme-number) (lambda (x) (- x)))
   (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
 
   'done-installing-scheme-operation-aliases)
@@ -67,6 +68,7 @@
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
 (define (=zero? x) (apply-generic '=zero? x))
+(define (neg x) (apply-generic 'neg x))
 
 (install-number-operation-aliases)
 
@@ -136,6 +138,13 @@
                                  (add-terms (rest-terms L1)
                                             (rest-terms L2)))))))))
 
+  (define (neg-poly p)
+    (make-poly (variable p)
+               (map (lambda (term) (list (order term) (neg (coeff term)))) (term-list p))))
+
+  (define (sub-poly p1 p2)
+    (add-poly p1 (neg-poly p2)))
+
   (define (mul-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
         (make-poly 
@@ -161,6 +170,10 @@
   (define (tag p) (attach-tag 'polynomial p))
   (put 'add '(polynomial polynomial)
        (lambda (p1 p2) (tag (add-poly p1 p2))))
+  (put 'sub '(polynomial polynomial)
+       (lambda (p1 p2) (tag (sub-poly p1 p2))))
+  (put 'neg '(polynomial)
+       (lambda (p1) (tag (neg-poly p1))))
   (put 'mul '(polynomial polynomial)
        (lambda (p1 p2) (tag (mul-poly p1 p2))))
   (put 'make 'polynomial
@@ -175,29 +188,18 @@
   ((get 'make 'polynomial) var terms))
 
 (define p1 (make-polynomial 'y '((2 1) (1 3) (0 1)))) ;; y^2 + 3y + 1
-(define pa0 (make-polynomial 'y '()))
-(define pb0 (make-polynomial 'x '((0 0))))
-(define pc0 (make-polynomial 'x '((100 0) (41 0) (4 0) (2 0) (0 0))))
-(define pd0 (make-polynomial 'z (list '(13 0)
-                                      '(3 0.0)
-                                      '(2 0.0+0.0i)
-                                      (list 0 pb0))))
 (define p2 (make-polynomial 'z (list '(12 0)
                                      '(5  0.0)
                                      '(2 0.0+0.0i)
                                      (list 1 (make-polynomial 'x '((4 0) (2 0.1) (1 0)))))))
-(define p3 (make-polynomial 'z (list (list 4 pb0)
-                                     '(3 0.0)
-                                     '(2 0.0+0.1i))))
-
-
-; Non zeros
-(=zero? p1); ✔
-(=zero? p2); ✔
-(=zero? p3); ✔
-
-; Zeros
-(=zero? pa0); ✔
-(=zero? pb0); ✔
-(=zero? pc0); ✔
-(=zero? pd0); ✔
+(define p-tweedledee (make-polynomial 'x '((6 5+4i)
+                                           (4 3)
+                                           (2 0)
+                                           (0 5))))
+(define p-tweedledum (make-polynomial 'x '((7 5+4i)
+                                           (5 3)
+                                           (3 0)
+                                           (1 5))))
+(=zero? (sub p1 p1)); ✔
+(=zero? (sub p2 p2)); ✔
+(sub p-tweedledee p-tweedledum)
