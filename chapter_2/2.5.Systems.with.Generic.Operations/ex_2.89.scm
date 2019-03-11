@@ -92,21 +92,28 @@
   (define (variable? x) (symbol? x))
   (define (same-variable? v1 v2)
     (and (variable? v1) (variable? v2)(eq? v1 v2)))
+
+  (define (all-terms terms)
+    (if (empty-termlist? terms)
+        (the-empty-termlist)
+        (cons (first-term terms) (all-terms (rest-terms terms)))))
   
   ;; Not naming it =zero? because it then becomes hard to call
   ;;  the *generic* =zero? for verifying the individual terms
   (define (is-zero? p)
-    (cond
-      ((null? (term-list p)) #t)
-      ((all (map (lambda (term) (=zero? (coeff term))) (term-list p))))
-      (else #f)))
+    (all (map (lambda (term) (=zero? (coeff term))) (all-terms (term-list p)))))
     
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-        term-list
-        (cons term term-list)))
+    (if (= (order term) (length term-list))
+        (cons (coeff term) term-list)
+        (adjoin-term term
+                     (adjoin-term
+                      (make-term (length term-list) 0)
+                      term-list))))
+
   (define (the-empty-termlist) '())
-  (define (first-term term-list) (car term-list))
+  (define (first-term term-list)
+    (make-term (dec (length term-list)) (car term-list)))
   (define (rest-terms term-list) (cdr term-list))
   (define (empty-termlist? term-list) (null? term-list))
   (define (make-term order coeff) (list order coeff))
@@ -138,9 +145,21 @@
                                  (add-terms (rest-terms L1)
                                             (rest-terms L2)))))))))
 
+  ;; Now I had to modify neg-poly because I wasn't careful enought to use the abstractions
+  ;;  provided
+  (define (neg-terms term-list)
+    (if (empty-termlist? term-list)
+        (the-empty-termlist)
+        (let
+            ((this-term (first-term term-list)))
+          (adjoin-term
+           (make-term (order this-term)
+                      (neg (coeff this-term)))
+           (neg-terms (rest-terms term-list))))))
+  
   (define (neg-poly p)
     (make-poly (variable p)
-               (map (lambda (term) (list (order term) (neg (coeff term)))) (term-list p))))
+               (neg-terms (term-list p))))
 
   (define (sub-poly p1 p2)
     (add-poly p1 (neg-poly p2)))
@@ -187,19 +206,23 @@
 (define (make-polynomial var terms)
   ((get 'make 'polynomial) var terms))
 
-(define p1 (make-polynomial 'y '((2 1) (1 3) (0 1)))) ;; y^2 + 3y + 1
-(define p2 (make-polynomial 'z (list '(12 0)
-                                     '(5  0.0)
-                                     '(2 0.0+0.0i)
-                                     (list 1 (make-polynomial 'x '((4 0) (2 0.1) (1 0)))))))
-(define p-tweedledee (make-polynomial 'x '((6 5+4i)
-                                           (4 3)
-                                           (2 0)
-                                           (0 5))))
-(define p-tweedledum (make-polynomial 'x '((7 5+4i)
-                                           (5 3)
-                                           (3 0)
-                                           (1 5))))
+(define p1 (make-polynomial 'y '(2 3 1))) ;; y^2 + 3y + 1
+(define px (make-polynomial 'x '(4 0 0 1)))
+(define py (make-polynomial 'x '(5 0 0 0 1)))
+(define pz (make-polynomial 'x '(5 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
+(define pa0 (make-polynomial 'y '(0 0.0 0+0i 0.0+0i)))
+p1
+pa0
+(neg p1)
+(=zero? p1); ✔
+(=zero? pa0); ✔
+(add p1 p1); ✔
 (=zero? (sub p1 p1)); ✔
-(=zero? (sub p2 p2)); ✔
-(sub p-tweedledee p-tweedledum)
+(mul p1 p1); ✔
+(add px py); ✔
+(sub py px); ✔
+(add pz px); ✔
+
+(define d-p1 (make-polynomial 'x '(1 1 1)))
+(define d-p2 (make-polynomial 'x '(1 0 1)))
+(mul d-p1 d-p2); ✔
