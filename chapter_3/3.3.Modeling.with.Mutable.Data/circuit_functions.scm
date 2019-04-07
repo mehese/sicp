@@ -53,9 +53,9 @@
         ((= s 1) 0)
         (else (error "Invalid signal" s))))
 
-(define inverter-delay 0.5)
-(define and-gate-delay 0.3)
-(define or-gate-delay 0.4)
+(define inverter-delay 0.005)
+(define and-gate-delay 0.003)
+(define or-gate-delay  0.004)
 
 ;; Inverter
 (define (inverter input output)

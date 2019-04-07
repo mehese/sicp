@@ -10,6 +10,12 @@ Another way to run scripts is using
 racket -l sicp --repl < runme.scm
 ```
 
+An alternative that also leaves you in the Racket shell is
+
+```bash
+racket -i -l sicp -f runme.scm
+```
+
 This enbles using commands like `(load "file.scm")` to load functions previously defined. However this method doesn't pretty-print lists and pairs. The solution is to have a `.racketrc` file that looks like
 
 ```scheme
