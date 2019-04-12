@@ -8,16 +8,13 @@
   (null? (car q)))
 (define (insert-queue! q item)
   (if (empty-queue? q)
-    (set-car! q (cons item nil))
-    (let 
-      ((curr-vals (car q)))
-      (set-car! q (cons item curr-vals)))))
+    (set-car! q (list item ))
+    (set-car! q (cons item (car q)))))
 (define (delete-queue! q)
-  (let
-    ((curr-vals (car q)))
-    (if (= 1 (length curr-vals))
-      (set-car! q '())
-      (set-car! q (cdr curr-vals)))))
+  (cond
+    ((null? (car q)) (display "ERROR: Deleting from an empty stack"))
+    ((= 1 (length (car q))) (set-car! q '()))
+    (else (set-car! q (cdar q)))))
 
 
 ;; Agenda stuff
@@ -99,12 +96,13 @@
 (define the-agenda (make-agenda))
 
 (define (after-delay delay action)
-  (add-to-agenda! 
+  (add-to-agenda!
    (+ delay (current-time the-agenda))
    action
    the-agenda))
 
-(define (propagate) (if (empty-agenda? the-agenda)
+(define (propagate)
+  (if (empty-agenda? the-agenda)
       'done
       (let ((first-item 
              (first-agenda-item the-agenda)))

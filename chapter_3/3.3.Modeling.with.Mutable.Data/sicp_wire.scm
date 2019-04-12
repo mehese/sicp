@@ -1,5 +1,3 @@
-(load "sicp_agenda.scm")
-
 (define (make-wire)
   (let ((signal-value 0) 
         (action-procedures '()))
