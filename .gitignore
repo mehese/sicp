@@ -50,4 +50,8 @@ tags
 # Code from https://mitpress.mit.edu/sites/default/files/sicp/code/index.html
 sicp-official-code
 sicp-official-code/*
+
+# Compiled c code
+*out
+
 # End of https://www.gitignore.io/api/vim,racket,scheme
