@@ -31,6 +31,7 @@
                            target
                            linkage))
         ((cond? exp) (compile (cond->if exp) target linkage))
+        ((let? exp) (compile (let->combination exp) target linkage)) ;; Needed for ex 5.50
         ((application? exp)
          (compile-application exp target linkage))
         (else
