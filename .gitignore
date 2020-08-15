@@ -55,6 +55,6 @@ sicp-official-code/*
 *out
 *o
 scheme
-scheme_tests
+scheme_test
 
 # End of https://www.gitignore.io/api/vim,racket,scheme

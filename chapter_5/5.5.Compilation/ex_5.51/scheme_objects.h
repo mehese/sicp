@@ -14,7 +14,9 @@ typedef struct LispObject {
     double NumberVal;
     bool BoolVal;
     char SymbolVal[MAX_SYMBOL_SIZE];
-    // If it's a pair
+    /* Quote contents */
+    struct LispObject* QuotePointer;
+    /* Pair contents */
     struct LispObject* CarPointer;
     struct LispObject* CdrPointer;
 } LispObject;
@@ -25,8 +27,9 @@ void print_lisp_object(LispObject* lisp_obj);
 
 void free_lisp_object(LispObject* the_object);
 
-LispObject* create_empty_lisp_object(LispType ze_type);
+LispObject* parse_input(char** tokens);
 
-LispObject* create_lisp_atom_from_string(char* token);
+char** tokenize_string(char* tokenize_me);
 
+char** input_to_tokens(char* input);
 #endif

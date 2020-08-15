@@ -28,6 +28,19 @@ void print_lisp_object(LispObject* lisp_obj) {
         case SYMBOL: 
             printf("%s ", lisp_obj->SymbolVal);
             break;
+        case QUOTED: 
+            printf("'");
+            print_lisp_object(lisp_obj->QuotePointer);
+            break;
+        case FUNCTION:
+            printf("function at %p", lisp_obj);
+            break;
+        case PAIR: 
+            printf("[");
+            print_lisp_object(lisp_obj->CarPointer);
+            print_lisp_object(lisp_obj->CdrPointer);
+            printf("] ");
+            break;
         default: 
             printf("lol, not implemented!");
     }
@@ -40,10 +53,8 @@ void free_lisp_object(LispObject* the_object) {
         free_lisp_object(the_object->CdrPointer);
     }
     else if (the_object->type != NIL) {
-        //printf("freeing "); print_lisp_object(the_object); 
         free(the_object);
     } 
-    //printf(". ");
 }
 
 
@@ -78,18 +89,18 @@ LispObject* create_lisp_atom_from_string(char* token) {
     }
 
     // Check if it's the null object
-    else if (strcmp(token, "nil\n")  == 0) {
+    else if (strcmp(token, "nil")  == 0) {
         output_obj = &LispNull;
     }
 
     // Check for boolean
-    else if ((strcmp(token, "#t\n"   ) == 0 ) || 
-             (strcmp(token, "true\n" ) == 0 )) {
+    else if ((strcmp(token, "#t"   ) == 0 ) || 
+             (strcmp(token, "true" ) == 0 )) {
         output_obj = create_empty_lisp_object(BOOLEAN);
         output_obj->BoolVal = true;
     } 
-    else if ((strcmp(token, "#f\n"   ) == 0 ) || 
-             (strcmp(token, "false\n") == 0 )) {
+    else if ((strcmp(token, "#f"   ) == 0 ) || 
+             (strcmp(token, "false") == 0 )) {
         output_obj = create_empty_lisp_object(BOOLEAN);
         output_obj->BoolVal = false;
     }
@@ -107,9 +118,207 @@ LispObject* create_lisp_atom_from_string(char* token) {
             token_iter++;
             i++;
         }
+        // TODO: Free some memory here
     }
 
     return output_obj;
+}
+
+char** get_car_tokens(char** tokens, size_t* length_of_obj) {
+    size_t seen_tokens = 1;
+
+    char** tokens_iter;
+    tokens_iter = tokens;
+
+    // Step one, if there are any leading quotes, count until there aren't any
+    if (*tokens_iter[0] == '\'') {
+        ++seen_tokens;
+        ++tokens_iter;
+    }
+
+    // Then count until all open brackets are closed
+    if (*tokens_iter[0] == '(') {
+        // List case
+        unsigned int open_parens = 1;
+
+        for (size_t i = 1; (tokens_iter[i] != NULL) && (open_parens > 0); i++) {
+            seen_tokens++;
+            if (*tokens_iter[i] == '(') {
+                open_parens++;
+            } 
+            else if (*tokens_iter[i] == ')') {
+                open_parens--;
+            }
+            //printf("%s\n", tokens[i]);
+        }
+    }
+
+    char** car_tokens;
+    car_tokens = calloc(seen_tokens, sizeof(char*));
+    for (size_t i=0; i < seen_tokens; i++) {
+        car_tokens[i] = strdup(tokens[i]);
+        //printf("car_token[%zu] = %s\n", i, car_tokens[i]);
+    }
+    // Save the position of the last relevant token, so you can use it for
+    // cdr, but only if the pointer is valid
+    if (length_of_obj != NULL) *length_of_obj = seen_tokens;
+
+    return car_tokens;
+}
+
+char** tokenize_string(char* tokenize_me) {
+
+    const char* SEPARATOR = " ";
+    char* input_cpy; // strtok is destructive
+
+    char* input_ptr;
+    int num_tokens = 0;
+
+    input_cpy = strdup(tokenize_me);
+    input_ptr = strtok(input_cpy, SEPARATOR);
+    while (input_ptr != NULL) {
+        num_tokens++;
+        input_ptr = strtok(NULL, SEPARATOR);
+    }
+
+    char** input_strings;
+    input_strings = calloc(num_tokens+1, sizeof(char *));
+
+    input_cpy = strdup(tokenize_me);
+    input_ptr = strtok(input_cpy, SEPARATOR);
+    for (size_t i = 0;  i < num_tokens; i++) {
+        input_strings[i] = strdup(input_ptr);
+        input_ptr = strtok(NULL, SEPARATOR);
+    }
+
+    free(input_ptr);
+
+    input_strings[num_tokens] = NULL;
+
+    return input_strings;
+}
+
+/*
+ * This function takes a cleaned up input and tries to break it down into a
+ * LispObject (either list or atom). So far in SICP we had the `read` function
+ * which provided parsing the raw input into a Lisp-type structure on which 
+ * we could call car/cdr and other stuff.
+ *
+ */
+LispObject* parse_input(char** tokens) {
+
+    LispObject* output_obj;
+    // Pairs start with a ( or '( 
+    if (*tokens[0] == '(') {
+        char** car_tokens;
+        char** cdr_tokens;
+        size_t end_of_car_tokens = 0;
+        output_obj = create_empty_lisp_object(PAIR);
+        car_tokens = get_car_tokens(++tokens, &end_of_car_tokens);
+        // Can't count less than 1 token in car
+        assert(end_of_car_tokens >= 1);
+        output_obj->CarPointer = parse_input(car_tokens);
+        cdr_tokens = tokens + end_of_car_tokens - 1;
+
+        // Check for end of list
+        if (*cdr_tokens[1] == ')') {
+            output_obj->CdrPointer = &LispNull;
+        } else {
+            *cdr_tokens[0] = '(';
+            output_obj->CdrPointer = parse_input(cdr_tokens);
+        }
+    }
+    // Quote case
+    else if (*tokens[0] == '\'') { // End of list: NULLIFY
+        char** quote_tokens;
+        output_obj = create_empty_lisp_object(QUOTED);
+        quote_tokens = get_car_tokens(++tokens, NULL);
+        output_obj->QuotePointer = parse_input(quote_tokens);
+        free(quote_tokens);
+    }
+    // Atom case
+    else {
+        output_obj = create_lisp_atom_from_string(tokens[0]);
+    }
+
+    return output_obj;
+}
+
+char** input_to_tokens(char* input) {
+    int input_length = strlen(input);
+
+    int num_new_spaces = 0;
+    int brackets_open = 0;
+    // TODO: remove newlines too
+    // TODO: check for extra whitespace too
+    for (size_t i = 0; i < input_length; ++i) {
+        // Replace '() by nil in input -- ideally you wouldn't modify input, but
+        // let's first hack to the max and then think pretty stuff
+        if ((input[i  ] == '\'') && (input_length - i > 2) && 
+            (input[i+1] == '(' ) && (input[i+2] == ')')) {
+            input[i  ] = 'n';
+            input[i+1] = 'i';
+            input[i+2] = 'l';
+        }
+        // Quote that isn't the nil character
+        else if (input[i] == '\'') {
+            num_new_spaces++;
+        }
+        else if (input[i] == '(') {
+            num_new_spaces++;
+            brackets_open++;
+        } 
+        if (input[i] == ')') {
+            num_new_spaces++;
+            brackets_open--;
+            // Quick sanity check: we should never close more brackets than we opened
+            assert(brackets_open >= 0);
+        } 
+    }
+    // Quick sanity check: all open parens should be closed
+    assert(brackets_open == 0);
+
+
+    char* cleaned_input;
+    // For each bracket we will want to add an extra space
+    cleaned_input = malloc(sizeof(char) * (input_length + num_new_spaces));
+    assert(cleaned_input != NULL);
+
+    // Iterator through cleaned_input, make sure there is a space before and
+    // after the parantheses
+    size_t j = 0;
+    char current_char;
+    for (size_t i = 0; i < input_length; ++i) {
+        current_char = input[i];
+        if (current_char == '(') {
+            cleaned_input[j] = current_char;
+            cleaned_input[j+1] = ' ';
+            j = j+2;
+
+        } 
+        else if (current_char == ')') {
+            cleaned_input[j] = ' ';
+            cleaned_input[j+1] = current_char;
+            j = j+2;
+        } 
+        // Add a space post quote symbol, to help parse
+        else if (current_char == '\'') {
+            cleaned_input[j] = current_char;
+            cleaned_input[j+1] = ' ';
+            j = j+2;
+        } 
+        // Ignore newline characters 
+        else if (current_char == '\n') {
+            ++j;
+        }
+        else {
+            cleaned_input[j] = current_char;
+            ++j;
+        }
+    }
+    //printf("Cleaned input: %sEND_INPUT\n", cleaned_input);
+    
+    return tokenize_string(cleaned_input);
 }
 
 

@@ -12,8 +12,8 @@ scheme: scheme.c scheme_objects.o
 scheme_tests.o: test/scheme_tests.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-scheme_tests: scheme_objects.o scheme_tests.o
-	$(CC) $^ -lcheck -lsubunit -lm -lpthread -lrt -o $@
+test: scheme_objects.o scheme_tests.o
+	$(CC) $^ -lcheck -lsubunit -lm -lpthread -lrt -o scheme_$@
 
 clean:
 	rm -rfv scheme scheme_tests *.o
