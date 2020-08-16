@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
-#include "../scheme_objects.h"
+#include "../src/scheme_objects.h"
 
 
 /*

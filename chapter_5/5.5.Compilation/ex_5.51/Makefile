@@ -3,10 +3,10 @@ CFLAGS=-Wall -g
 
 all: clean scheme
 
-scheme_objects.o: scheme_objects.c scheme_objects.h
-	$(CC) $(CFLAGS) -o $@ -c scheme_objects.c 
+scheme_objects.o: src/scheme_objects.c src/scheme_objects.h
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-scheme: scheme.c scheme_objects.o
+scheme: src/scheme.c scheme_objects.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 scheme_tests.o: test/scheme_tests.c
