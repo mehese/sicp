@@ -6,7 +6,8 @@
 #define FLOAT_TOL 1e-6
 
 typedef enum LispType {
-    NIL, BOOLEAN, NUMBER, SYMBOL, FUNCTION, QUOTED, PAIR 
+    NIL, BOOLEAN, NUMBER, SYMBOL, PRIMITIVE_PROC, COMPOUND_PROCEDURE, 
+    QUOTED, PAIR 
 } LispType;
 
 typedef struct LispObject {
@@ -14,6 +15,8 @@ typedef struct LispObject {
     double NumberVal;
     bool BoolVal;
     char SymbolVal[MAX_SYMBOL_SIZE];
+    /* Primitive Function Impl*/
+    struct LispObject (*PrimitiveFun)(struct LispObject *arglist);
     /* Quote contents */
     struct LispObject* QuotePointer;
     /* Pair contents */
@@ -26,6 +29,8 @@ extern LispObject LispNull;
 void print_lisp_object(LispObject* lisp_obj);
 
 void free_lisp_object(LispObject* the_object);
+
+LispObject* create_empty_lisp_object(LispType ze_type);
 
 LispObject* parse_input(char** tokens);
 

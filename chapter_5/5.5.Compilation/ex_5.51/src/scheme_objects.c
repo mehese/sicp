@@ -32,8 +32,11 @@ void print_lisp_object(LispObject* lisp_obj) {
             printf("'");
             print_lisp_object(lisp_obj->QuotePointer);
             break;
-        case FUNCTION:
-            printf("function at %p", lisp_obj);
+        case PRIMITIVE_PROC:
+            printf("primitive");
+            break;
+        case COMPOUND_PROCEDURE:
+            printf("lambda");
             break;
         case PAIR: 
             printf("[");
