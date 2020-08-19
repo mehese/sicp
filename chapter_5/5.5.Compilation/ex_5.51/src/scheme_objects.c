@@ -10,7 +10,8 @@ LispObject LispNull = {
     .type = NIL, 
     .NumberVal = 0.0,
     .BoolVal = false,
-    .SymbolVal = "nil" 
+    .SymbolVal = "nil",
+    .PrimitiveFun = NULL
 };
 
 
@@ -33,7 +34,7 @@ void print_lisp_object(LispObject* lisp_obj) {
             print_lisp_object(lisp_obj->QuotePointer);
             break;
         case PRIMITIVE_PROC:
-            printf("primitive");
+            printf("primitive$%s ", lisp_obj->SymbolVal);
             break;
         case COMPOUND_PROCEDURE:
             printf("lambda");

@@ -4,8 +4,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "scheme_env.h"
 #include "scheme_objects.h"
+#include "scheme_env.h"
+#include "scheme_primitives.h"
 
 Environment the_empty_environment = {
     .Size = 0
@@ -70,40 +71,32 @@ LispObject* environment_lookup(Environment* env, char* name) {
 
 Environment* environment_init(void) {
     Environment* env_out;
-    LispObject* o;
 
     /* Object contents 
      *
-     * Primitives: LispObject type SYMBOL
-     *  "primitiveCar"
-     *  "primitiveCdr"
-     *  "primitiveCons"
-     *  "primitiveNull"
-     *  "primitiveAdd"
-     *  "primitiveMul"
-     *  "primitiveSub"
-     *  "primitiveDiv"
+     * Primitives
      *
      */
 
     env_out = environment_copy(&the_empty_environment);
-
-    o = create_empty_lisp_object(PRIMITIVE_PROC);
-    environment_add(env_out, "car", o);
     
-    environment_add(env_out, "cdr", &LispNull);
+    environment_add(env_out, Car.SymbolVal, &Car);
+    environment_add(env_out, Cdr.SymbolVal, &Cdr);
     
+    // TODO fill the rest
     environment_add(env_out, "cons", &LispNull);
     
     environment_add(env_out, "null?", &LispNull);
     
-    environment_add(env_out, "+", &LispNull);
+    environment_add(env_out, Add.SymbolVal, &Add);
     
     environment_add(env_out, "*", &LispNull);
     
     environment_add(env_out, "-", &LispNull);
     
     environment_add(env_out, "/", &LispNull);
+
+    environment_add(env_out, "=", &LispNull);
 
     return env_out;
 }

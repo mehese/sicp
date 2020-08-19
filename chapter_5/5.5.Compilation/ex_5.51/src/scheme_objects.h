@@ -15,8 +15,11 @@ typedef struct LispObject {
     double NumberVal;
     bool BoolVal;
     char SymbolVal[MAX_SYMBOL_SIZE];
-    /* Primitive Function Impl*/
-    struct LispObject (*PrimitiveFun)(struct LispObject *arglist);
+    /* Primitive Function Impl:
+     *  a pointer to a function that returns a pointer to LispObject
+     *  that also takes in a LispObject argument
+     * */
+    struct LispObject* (*PrimitiveFun)(struct LispObject* o);
     /* Quote contents */
     struct LispObject* QuotePointer;
     /* Pair contents */

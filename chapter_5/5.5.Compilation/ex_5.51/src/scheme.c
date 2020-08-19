@@ -4,36 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "scheme_objects.h"
+#include "scheme_primitives.h"
 #include "scheme_env.h"
-
-/* Primitives */
-
-LispObject* clone_lisp_object(LispObject* in) {
-    LispObject* new_lisp_object;
-    new_lisp_object = malloc(sizeof(LispObject));
-    assert(new_lisp_object != NULL);
-    memcpy(new_lisp_object, in, sizeof(LispObject));
-    
-    return new_lisp_object;
-}
-
-LispObject* car(LispObject* o) {
-    assert (o->type == PAIR);
-    return clone_lisp_object(o->CarPointer);
-}
-
-LispObject* cdr(LispObject* o) {
-    assert (o->type == PAIR);
-    return clone_lisp_object(o->CdrPointer);
-}
-
-LispObject* cadr(LispObject* o) {
-    assert (o->type == PAIR);
-    assert (o->CdrPointer->type == PAIR);
-    return clone_lisp_object(o->CdrPointer->CarPointer);
-}
-
-/* End primitives */
 
 bool self_evaluating(LispObject* exp) {
     bool is_self_eval;
@@ -59,26 +31,29 @@ bool is_quote(LispObject* exp) {
     return ( exp->type == QUOTED ) ? true : false;
 }
 
-bool is_definition(LispObject* exp) {
-    bool result = false;
+bool is_tagged_with(LispObject* exp, char* tag) {
     if ((exp->type == PAIR) &&
         (exp->CarPointer->type == SYMBOL) && 
-        (strcmp(exp->CarPointer->SymbolVal, "define") == 0)) {
-            result = true; 
-        }
+        (strcmp(exp->CarPointer->SymbolVal, "define") == 0))
+            return true; 
+    else return false;
+    
+}
 
-    return result;
+bool is_definition(LispObject* exp) {
+    return is_tagged_with(exp, "define");
 }
 
 // TODO: move these in a more civilized location, like a header file
 LispObject* eval_definition(LispObject* exp, Environment* env);
 LispObject* eval(LispObject* exp, Environment* env);
+LispObject* apply(LispObject* procedure, LispObject* arguments, Environment* env);
 
 LispObject* eval_definition(LispObject* exp, Environment* env) {
     LispObject *variable, *value, *evaluated_value;
 
-    variable = cadr(exp);
-    value = cadr(cdr(exp));
+    variable = exp->CdrPointer->CarPointer;
+    value = exp->CdrPointer->CdrPointer->CarPointer;
 
     evaluated_value = eval(value, env);
     environment_add(env, variable->SymbolVal, evaluated_value);
@@ -87,10 +62,21 @@ LispObject* eval_definition(LispObject* exp, Environment* env) {
     return &LispNull;
 }
 
+LispObject* list_of_values(LispObject* exp, Environment* env) {
+    if (exp->type == NIL) return &LispNull;
+    LispObject* output;
+    output = create_empty_lisp_object(PAIR);
+    output->CarPointer = eval(exp->CarPointer, env);
+    output->CdrPointer = list_of_values(exp->CdrPointer, env);
+
+    return output;
+}
+
 LispObject* eval(LispObject* exp, Environment* env) {
     LispObject* output = NULL;
 
-    if (self_evaluating(exp)) {
+    if (self_evaluating(exp)) { 
+        // here you might be able to return directly, no cloning
         output = exp;
     }
     else if (is_variable(exp)) {
@@ -103,12 +89,49 @@ LispObject* eval(LispObject* exp, Environment* env) {
     else if (is_definition(exp)) {
         output = eval_definition(exp, env);
     }
+    else if (exp->type == PAIR) {
+        LispObject* operator;
+        LispObject* list_of_operands;
+        operator = eval(exp->CarPointer, env);
+        list_of_operands = list_of_values(exp->CdrPointer, env);
+        output = apply(operator, list_of_operands, env);
+    }
     else {
         printf("This isn't good!\n");
         output = &LispNull;
     }
 
     return clone_lisp_object(output);
+}
+
+LispObject* apply(LispObject* procedure, LispObject* arguments, Environment* env) {
+    LispObject* output;
+
+    if (procedure->type == PRIMITIVE_PROC) {
+        printf("In primitive apply!\n");
+        printf("Op: ");
+        print_lisp_object(procedure);
+        printf("\n");
+        printf("Args: ");
+        print_lisp_object(arguments);
+        printf("\n");
+        output = procedure->PrimitiveFun(arguments);
+        printf("Output: ");
+        print_lisp_object(output);
+        printf("\n");
+    }
+    else if (procedure->type == COMPOUND_PROCEDURE) {
+        printf("In compound apply!\n");
+        output = &LispNull;
+    }
+    else {
+        printf("Error applying procedure: ");
+        print_lisp_object(procedure);
+        printf("\n");
+        output = &LispNull;
+    }
+
+    return output;
 }
 
 
