@@ -34,8 +34,22 @@ LispObject* lisp_cdr(LispObject* o) {
 
 LispObject* lisp_cadr(LispObject* o) {
     assert (o->type == PAIR);
+    assert (o->CdrPointer->type == NIL);
+    assert (o->CarPointer->type == PAIR);
+    assert (o->CarPointer->CdrPointer->type == PAIR);
+    return clone_lisp_object(o->CarPointer->CdrPointer->CarPointer);
+}
+
+LispObject* lisp_cons(LispObject* o) {
+    assert (o->type == PAIR);
     assert (o->CdrPointer->type == PAIR);
-    return clone_lisp_object(o->CdrPointer->CarPointer);
+    assert (o->CdrPointer->CdrPointer->type == NIL);
+
+    LispObject* new_obj;
+    new_obj = create_empty_lisp_object(PAIR);
+    new_obj->CarPointer = o->CarPointer;
+    new_obj->CdrPointer = o->CdrPointer->CarPointer;
+    return new_obj;
 }
 
 LispObject* lisp_add(LispObject* o) {
@@ -73,9 +87,17 @@ LispObject Cdr = {
 };
 
 
+LispObject Cadr = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "cadr",
+    .PrimitiveFun = &lisp_cadr
+};
+
+
 LispObject Cons = {
     .type = PRIMITIVE_PROC,
-    .SymbolVal = "cons"
+    .SymbolVal = "cons",
+    .PrimitiveFun = &lisp_cons
 };
 
 LispObject NullCheck = {

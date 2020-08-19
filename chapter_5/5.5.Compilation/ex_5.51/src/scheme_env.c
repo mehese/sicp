@@ -72,9 +72,8 @@ LispObject* environment_lookup(Environment* env, char* name) {
 Environment* environment_init(void) {
     Environment* env_out;
 
-    /* Object contents 
-     *
-     * Primitives
+    /* 
+     * Initial Environment contents: Primitives
      *
      */
 
@@ -82,13 +81,13 @@ Environment* environment_init(void) {
     
     environment_add(env_out, Car.SymbolVal, &Car);
     environment_add(env_out, Cdr.SymbolVal, &Cdr);
+    environment_add(env_out, Cadr.SymbolVal, &Cadr);
+    environment_add(env_out, Cons.SymbolVal, &Cons);
+    environment_add(env_out, Add.SymbolVal, &Add);
     
     // TODO fill the rest
-    environment_add(env_out, "cons", &LispNull);
     
     environment_add(env_out, "null?", &LispNull);
-    
-    environment_add(env_out, Add.SymbolVal, &Add);
     
     environment_add(env_out, "*", &LispNull);
     

@@ -11,6 +11,7 @@ LispObject* lisp_add(LispObject* o);
 
 extern LispObject Car;
 extern LispObject Cdr;
+extern LispObject Cadr;
 extern LispObject Cons;
 extern LispObject NullCheck;
 extern LispObject Add;
