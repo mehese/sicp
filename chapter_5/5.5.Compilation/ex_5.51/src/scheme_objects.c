@@ -45,6 +45,7 @@ void print_lisp_object(LispObject* lisp_obj) {
                 printf("%s ", curr_arg);
             }
             printf(")");
+            //print_environment(lisp_obj->CompoundFunEnvironment);
             break;
         case PAIR: 
             printf("[");
@@ -59,6 +60,8 @@ void print_lisp_object(LispObject* lisp_obj) {
 
 
 void free_lisp_object(LispObject* the_object) {
+    //the_object->CompoundFunInstructionSequence = NULL;
+    //the_object->CompoundFunEnvironment = NULL;
     if (the_object->type == PAIR) {
         free_lisp_object(the_object->CarPointer);
         free_lisp_object(the_object->CdrPointer);

@@ -11,6 +11,8 @@ typedef enum LispType {
     QUOTED, PAIR 
 } LispType;
 
+//typedef struct Environment;
+
 typedef struct LispObject {
     LispType type;
     double NumberVal;
@@ -35,6 +37,7 @@ typedef struct LispObject {
      */
     char CompoundFunArgNames[MAX_LAMBDA_ARGS][MAX_SYMBOL_SIZE];
     struct LispObject* CompoundFunInstructionSequence;
+    struct Environment* CompoundFunEnvironment;
 
  } LispObject;
 

@@ -51,7 +51,7 @@ bool is_lambda(LispObject* exp) {
 // TODO: move these in a more civilized location, like a header file
 LispObject* eval_definition(LispObject* exp, Environment* env);
 LispObject* eval(LispObject* exp, Environment* env);
-LispObject* apply(LispObject* procedure, LispObject* arguments, Environment* env);
+LispObject* apply(LispObject* procedure, LispObject* arguments);
 
 LispObject* eval_definition(LispObject* exp, Environment* env) {
     LispObject *variable, *value, *evaluated_value;
@@ -80,14 +80,14 @@ LispObject* make_procedure(LispObject* exp, Environment* env) {
     LispObject *output, *arg_list, *instruction_sequence;
     output = create_empty_lisp_object(COMPOUND_PROCEDURE);
     /* initialize arguments to end of string */
-    for (size_t arg_i; arg_i < MAX_LAMBDA_ARGS; arg_i++)
-        for (size_t char_i; char_i < MAX_SYMBOL_SIZE; char_i++) {
+    for (size_t arg_i = 0; arg_i < MAX_LAMBDA_ARGS; arg_i++)
+        for (size_t char_i = 0; char_i < MAX_SYMBOL_SIZE; char_i++) {
             output->CompoundFunArgNames[arg_i][char_i] = '\0';
         }
     arg_list = exp->CdrPointer->CarPointer;
     assert(arg_list->type == PAIR);
 
-    // Initialize the argument list (remember environment lookup is done on string)
+    /* Initialize the argument list (remember environment lookup is done on string) */
     LispObject *curr_lambda_arg, *rest_of_args; 
     rest_of_args = arg_list;
     for (size_t arg_i = 0; arg_i < MAX_LAMBDA_ARGS ; arg_i++) {
@@ -98,9 +98,16 @@ LispObject* make_procedure(LispObject* exp, Environment* env) {
         strcpy(output->CompoundFunArgNames[arg_i], curr_lambda_arg->SymbolVal);
 
     }
+
+    /* Save the instruction sequence */
     instruction_sequence = exp->CdrPointer->CdrPointer;
     assert(instruction_sequence->type == PAIR);
     output->CompoundFunInstructionSequence = instruction_sequence;
+
+    /* Save the environment */
+    output->CompoundFunEnvironment = env;
+
+    //print_environment(output->CompoundFunEnvironment);
 
     return output;
 }
@@ -130,7 +137,7 @@ LispObject* eval(LispObject* exp, Environment* env) {
         LispObject* list_of_operands;
         operator = eval(exp->CarPointer, env);
         list_of_operands = list_of_values(exp->CdrPointer, env);
-        output = apply(operator, list_of_operands, env);
+        output = apply(operator, list_of_operands);
     }
     else {
         printf("This isn't good!\n");
@@ -140,25 +147,47 @@ LispObject* eval(LispObject* exp, Environment* env) {
     return clone_lisp_object(output);
 }
 
-LispObject* apply(LispObject* procedure, LispObject* arguments, Environment* env) {
+LispObject* apply(LispObject* procedure, LispObject* arguments) {
     LispObject* output;
 
     if (procedure->type == PRIMITIVE_PROC) {
-        printf("In primitive apply!\n");
-        printf("Op: ");
-        print_lisp_object(procedure);
-        printf("\n");
-        printf("Args: ");
-        print_lisp_object(arguments);
-        printf("\n");
         output = procedure->PrimitiveFun(arguments);
-        printf("Output: ");
-        print_lisp_object(output);
-        printf("\n");
     }
     else if (procedure->type == COMPOUND_PROCEDURE) {
         printf("In compound apply!\n");
-        output = &LispNull;
+        print_environment(procedure->CompoundFunEnvironment);
+
+        /* Extending environment with passed arguments */
+        Environment* env;
+        char* curr_arg_name;
+        LispObject *rest_of_args, *curr_arg_val;
+        env = environment_copy(procedure->CompoundFunEnvironment);
+    
+        rest_of_args = arguments;
+        for (size_t arg_i = 0; arg_i < MAX_LAMBDA_ARGS; arg_i++) {
+            curr_arg_name = procedure->CompoundFunArgNames[arg_i];
+            if (curr_arg_name[0] == '\0') break;
+
+            assert(rest_of_args->type == PAIR);
+            curr_arg_val = rest_of_args->CarPointer;
+            environment_add(env, curr_arg_name, curr_arg_val);
+            rest_of_args = rest_of_args->CdrPointer;
+        }
+        print_environment(env);
+
+        /* Evaluating each of the instructions in the list*/
+        output = &LispNull; // Default return type
+
+        LispObject *rest_of_instructions, *current_instruction;
+        rest_of_instructions = procedure->CompoundFunInstructionSequence;
+
+        while (rest_of_instructions->type != NIL) {
+            current_instruction = rest_of_instructions->CarPointer;
+            output = eval(current_instruction, env);
+            
+            rest_of_instructions = rest_of_instructions->CdrPointer;
+        }
+
     }
     else {
         printf("Error applying procedure: ");
@@ -182,6 +211,7 @@ int main() {
 
     the_global_environment = environment_init();
     for (;;) {
+        //print_environment(the_global_environment);
         printf("Scheme > ");
         fgets(input, MAX_INPUT_SIZE, stdin);
         if (strlen(input) > 1) {
@@ -190,8 +220,9 @@ int main() {
             parsed_input = parse_input(tokens);
             evaluated_input = eval(parsed_input, the_global_environment);
             print_lisp_object(evaluated_input);
-            free_lisp_object(parsed_input);
-            free_lisp_object(evaluated_input);
+            //TODO: make sure the two below don't mess up your environ lookups
+            //free_lisp_object(parsed_input);
+            //free_lisp_object(evaluated_input);
         }
         printf("\n");
     }

@@ -15,9 +15,10 @@ Environment the_empty_environment = {
 Environment* environment_copy(Environment* env_in) {
     Environment* env_out;
     env_out = malloc(sizeof(Environment));
+    assert(env_out != NULL);
     
     env_out->Size = env_in->Size;
-    for (size_t i; i < MAX_ENVIRONMENT_SIZE; ++i) {
+    for (size_t i = 0; i < MAX_ENVIRONMENT_SIZE; ++i) {
         if (i < env_in->Size) {
             strcpy(env_out->Elements[i].Key, env_in->Elements[i].Key);
             env_out->Elements[i].Val = env_in->Elements[i].Val;
