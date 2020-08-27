@@ -37,7 +37,14 @@ void print_lisp_object(LispObject* lisp_obj) {
             printf("primitive$%s ", lisp_obj->SymbolVal);
             break;
         case COMPOUND_PROCEDURE:
-            printf("lambda");
+            printf("lambda (");
+            char* curr_arg;
+            for (size_t arg_i = 0; arg_i < MAX_LAMBDA_ARGS ; arg_i++) {
+                curr_arg = lisp_obj->CompoundFunArgNames[arg_i];
+                if (curr_arg[0] == '\0') break;
+                printf("%s ", curr_arg);
+            }
+            printf(")");
             break;
         case PAIR: 
             printf("[");
@@ -255,6 +262,7 @@ char** input_to_tokens(char* input) {
     int brackets_open = 0;
     // TODO: remove newlines too
     // TODO: check for extra whitespace too
+    // TODO: this fails when passed an expression like (lambda () 'hi) -- parser should accept () as valid input
     for (size_t i = 0; i < input_length; ++i) {
         // Replace '() by nil in input -- ideally you wouldn't modify input, but
         // let's first hack to the max and then think pretty stuff

@@ -34,7 +34,7 @@ bool is_quote(LispObject* exp) {
 bool is_tagged_with(LispObject* exp, char* tag) {
     if ((exp->type == PAIR) &&
         (exp->CarPointer->type == SYMBOL) && 
-        (strcmp(exp->CarPointer->SymbolVal, "define") == 0))
+        (strcmp(exp->CarPointer->SymbolVal, tag) == 0))
             return true; 
     else return false;
     
@@ -42,6 +42,10 @@ bool is_tagged_with(LispObject* exp, char* tag) {
 
 bool is_definition(LispObject* exp) {
     return is_tagged_with(exp, "define");
+}
+
+bool is_lambda(LispObject* exp) {
+    return is_tagged_with(exp, "lambda");
 }
 
 // TODO: move these in a more civilized location, like a header file
@@ -72,6 +76,35 @@ LispObject* list_of_values(LispObject* exp, Environment* env) {
     return output;
 }
 
+LispObject* make_procedure(LispObject* exp, Environment* env) {
+    LispObject *output, *arg_list, *instruction_sequence;
+    output = create_empty_lisp_object(COMPOUND_PROCEDURE);
+    /* initialize arguments to end of string */
+    for (size_t arg_i; arg_i < MAX_LAMBDA_ARGS; arg_i++)
+        for (size_t char_i; char_i < MAX_SYMBOL_SIZE; char_i++) {
+            output->CompoundFunArgNames[arg_i][char_i] = '\0';
+        }
+    arg_list = exp->CdrPointer->CarPointer;
+    assert(arg_list->type == PAIR);
+
+    // Initialize the argument list (remember environment lookup is done on string)
+    LispObject *curr_lambda_arg, *rest_of_args; 
+    rest_of_args = arg_list;
+    for (size_t arg_i = 0; arg_i < MAX_LAMBDA_ARGS ; arg_i++) {
+        if (rest_of_args->type == NIL) break;
+        curr_lambda_arg = rest_of_args->CarPointer;
+        assert(curr_lambda_arg->type == SYMBOL);
+        rest_of_args = rest_of_args->CdrPointer;
+        strcpy(output->CompoundFunArgNames[arg_i], curr_lambda_arg->SymbolVal);
+
+    }
+    instruction_sequence = exp->CdrPointer->CdrPointer;
+    assert(instruction_sequence->type == PAIR);
+    output->CompoundFunInstructionSequence = instruction_sequence;
+
+    return output;
+}
+
 LispObject* eval(LispObject* exp, Environment* env) {
     LispObject* output = NULL;
 
@@ -88,6 +121,9 @@ LispObject* eval(LispObject* exp, Environment* env) {
     // TODO: Add assignment (set! command)
     else if (is_definition(exp)) {
         output = eval_definition(exp, env);
+    }
+    else if (is_lambda(exp)) {
+        output = make_procedure(exp, env);
     }
     else if (exp->type == PAIR) {
         LispObject* operator;
