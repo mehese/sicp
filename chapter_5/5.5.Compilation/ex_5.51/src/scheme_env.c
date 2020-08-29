@@ -85,18 +85,12 @@ Environment* environment_init(void) {
     environment_add(env_out, Cadr.SymbolVal, &Cadr);
     environment_add(env_out, Cons.SymbolVal, &Cons);
     environment_add(env_out, Add.SymbolVal, &Add);
-    
-    // TODO fill the rest
-    
-    environment_add(env_out, "null?", &LispNull);
-    
-    environment_add(env_out, "*", &LispNull);
-    
-    environment_add(env_out, "-", &LispNull);
-    
-    environment_add(env_out, "/", &LispNull);
-
-    environment_add(env_out, "=", &LispNull);
+    environment_add(env_out, Sub.SymbolVal, &Sub);
+    environment_add(env_out, Mul.SymbolVal, &Mul);
+    environment_add(env_out, Div.SymbolVal, &Div);
+    environment_add(env_out, NumEq.SymbolVal, &NumEq);
+    environment_add(env_out, SymEq.SymbolVal, &SymEq);
+    environment_add(env_out, NullCheck.SymbolVal, &NullCheck); 
 
     return env_out;
 }

@@ -18,6 +18,7 @@ extern LispObject Add;
 extern LispObject Mul;
 extern LispObject Div;
 extern LispObject Sub;
-extern LispObject Eq;
+extern LispObject NumEq;
+extern LispObject SymEq;
 
 #endif

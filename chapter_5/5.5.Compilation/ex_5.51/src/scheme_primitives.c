@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 #include "scheme_objects.h"
 #include "scheme_primitives.h"
 
@@ -72,6 +73,132 @@ LispObject* lisp_add(LispObject* o) {
     return res;
 }
 
+LispObject* lisp_sub(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(NUMBER);
+    res->NumberVal = arg1->NumberVal - arg2->NumberVal;
+
+    return res;
+}
+
+LispObject* lisp_mul(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(NUMBER);
+    res->NumberVal = arg1->NumberVal * arg2->NumberVal;
+
+    return res;
+}
+
+LispObject* lisp_div(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+    assert(fabs(arg2->NumberVal) >= FLOAT_TOL);
+
+    res = create_empty_lisp_object(NUMBER);
+    res->NumberVal = arg1->NumberVal / arg2->NumberVal;
+
+    return res;
+}
+
+
+LispObject* lisp_num_eq(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (fabs(arg1->NumberVal - arg2->NumberVal) < FLOAT_TOL) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+LispObject* lisp_sym_eq(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == SYMBOL);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == SYMBOL);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (strcmp(arg1->SymbolVal, arg2->SymbolVal) == 0) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+LispObject* lisp_check_null(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject* res;
+    assert (o->type == PAIR);
+    assert (o->CdrPointer->type == NIL);
+    printf("Type is %d\n", o->CarPointer->type);
+    res = create_empty_lisp_object(BOOLEAN);
+    res->BoolVal = (o->CarPointer->type == NIL) ? true : false;
+    return res;
+}
+
+
 /* End primitives */
 
 LispObject Car = {
@@ -102,7 +229,8 @@ LispObject Cons = {
 
 LispObject NullCheck = {
     .type = PRIMITIVE_PROC,
-    .SymbolVal = "null?"
+    .SymbolVal = "null?",
+    .PrimitiveFun = &lisp_check_null
 };
 
 LispObject Add = {
@@ -113,22 +241,32 @@ LispObject Add = {
 
 LispObject Mul = {
     .type = PRIMITIVE_PROC,
-    .SymbolVal = "*"
-};
-
-LispObject Div = {
-    .type = PRIMITIVE_PROC,
-    .SymbolVal = "/"
+    .SymbolVal = "*",
+    .PrimitiveFun = &lisp_mul
 };
 
 LispObject Sub = {
     .type = PRIMITIVE_PROC,
-    .SymbolVal = "/"
+    .SymbolVal = "-",
+    .PrimitiveFun = &lisp_sub
 };
 
-LispObject Eq = {
+LispObject Div = {
     .type = PRIMITIVE_PROC,
-    .SymbolVal = "="
+    .SymbolVal = "/",
+    .PrimitiveFun = &lisp_div
+};
+
+LispObject NumEq = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "=",
+    .PrimitiveFun = &lisp_num_eq,
+};
+
+LispObject SymEq = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "eq?",
+    .PrimitiveFun = &lisp_sym_eq,
 };
 
 

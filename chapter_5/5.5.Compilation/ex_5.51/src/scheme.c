@@ -44,6 +44,10 @@ bool is_definition(LispObject* exp) {
     return is_tagged_with(exp, "define");
 }
 
+bool is_if(LispObject* exp) {
+    return is_tagged_with(exp, "if");
+}
+
 bool is_lambda(LispObject* exp) {
     return is_tagged_with(exp, "lambda");
 }
@@ -72,6 +76,35 @@ LispObject* list_of_values(LispObject* exp, Environment* env) {
     output = create_empty_lisp_object(PAIR);
     output->CarPointer = eval(exp->CarPointer, env);
     output->CdrPointer = list_of_values(exp->CdrPointer, env);
+
+    return output;
+}
+
+LispObject* eval_if(LispObject* exp, Environment* env) {
+    LispObject *check_result, *if_predicate, *if_consequent, *if_alternative, *output;
+    
+    if_predicate = exp->CdrPointer->CarPointer; /* if_predicate is the cadr of the expression */
+    if_consequent = exp->CdrPointer->CdrPointer->CarPointer; /* if_predicate is the caddr of the expression */
+    if_alternative = exp->CdrPointer->CdrPointer->CdrPointer; /* if_predicate is the caddr of the expression */
+    if (if_alternative->type == PAIR) {
+        if_alternative = if_alternative->CarPointer;
+    }
+    else {
+        if_alternative = create_empty_lisp_object(BOOLEAN);
+        if_alternative->BoolVal = false;
+    }
+    check_result = eval(if_predicate, env);
+   
+    /* if the check result is anything but a boolean negative */
+    if ((check_result->type != BOOLEAN) ||
+        (check_result->BoolVal == true)) {
+        /* test succeeded -> evaluate consequent */ 
+        output = eval(if_consequent, env);
+    } 
+    else {
+        /* test failed -> evaluate alternative */
+        output = eval(if_alternative, env);
+    }
 
     return output;
 }
@@ -126,8 +159,13 @@ LispObject* eval(LispObject* exp, Environment* env) {
         output = exp->QuotePointer;
     }
     // TODO: Add assignment (set! command)
+    // TODO: Add `and` evaluation
+    // TODO: Add `or` evaluation
     else if (is_definition(exp)) {
         output = eval_definition(exp, env);
+    }
+    else if (is_if(exp)) {
+        output = eval_if(exp, env);
     }
     else if (is_lambda(exp)) {
         output = make_procedure(exp, env);
@@ -154,9 +192,6 @@ LispObject* apply(LispObject* procedure, LispObject* arguments) {
         output = procedure->PrimitiveFun(arguments);
     }
     else if (procedure->type == COMPOUND_PROCEDURE) {
-        printf("In compound apply!\n");
-        print_environment(procedure->CompoundFunEnvironment);
-
         /* Extending environment with passed arguments */
         Environment* env;
         char* curr_arg_name;
@@ -173,7 +208,6 @@ LispObject* apply(LispObject* procedure, LispObject* arguments) {
             environment_add(env, curr_arg_name, curr_arg_val);
             rest_of_args = rest_of_args->CdrPointer;
         }
-        print_environment(env);
 
         /* Evaluating each of the instructions in the list*/
         output = &LispNull; // Default return type
@@ -250,6 +284,14 @@ int main() {
  *
  * Had the text mercifully not used the term low-level I would have just went for
  * Python and used Norvig's own https://norvig.com/lispy.html
+ *
+ * This language leaks *everything* since I didn't bother implementing an obarray.
+ * It also has no cond statements, no and statements, no or statements, no syntactic
+ * sugar for function definitions either. All the numbers are cast to C doubles and 
+ * the arithmetic is done at that level, so best not calculate very high factorials.
+ *
+ * The best thing it can do is this
+ *    (define factorial (lambda (n) (if (= n 1) 1 (* n (factorial (- n 1))))))
  *
  */
  
