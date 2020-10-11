@@ -15,8 +15,12 @@ scheme_env.o: src/scheme_env.c src/scheme_env.h
 scheme_eval_apply.o: src/scheme_eval_apply.c src/scheme_eval_apply.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-scheme: src/scheme.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
+scheme: src/compiled.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
 	$(CC) $(CFLAGS) -o $@ $^
+
+compiled_scheme: src/compiled.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
+	$(CC) $(CFLAGS) -o $@ $^
+
 
 scheme_tests.o: test/scheme_tests.c
 	$(CC) $(CFLAGS) -o $@ -c $<
