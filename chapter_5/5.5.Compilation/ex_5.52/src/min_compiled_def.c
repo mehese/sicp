@@ -15,12 +15,11 @@ Environment *env;
 int main() {
 
     env = environment_init();
+    //print_environment(the_global_environment);
 
-    val = parse_lisp_object_from_string("(a b c)");
-
-    print_lisp_object(val);
-    putchar(10); /* print an extra newline */
+    printf("All done!\n");
+    
     return EXIT_SUCCESS;
-};
+}
 
-/* footer here */
+

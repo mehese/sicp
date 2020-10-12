@@ -48,6 +48,8 @@ void print_lisp_object(LispObject* lisp_obj);
 void free_lisp_object(LispObject* the_object);
 
 LispObject* create_empty_lisp_object(LispType ze_type);
+LispObject* create_lisp_atom_from_string(char* token);
+LispObject* parse_lisp_object_from_string(char* token);
 
 /* Equivalent to the (read) statement found in the code */
 LispObject* read_and_parse_input(void);

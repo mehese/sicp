@@ -14,28 +14,50 @@
 
 ;;;SECTION 5.5.1
 
-(define (compile exp target linkage)
-  (cond ((self-evaluating? exp)
-         (compile-self-evaluating exp target linkage))
-        ((quoted? exp) (compile-quoted exp target linkage))
-        ((variable? exp)
-         (compile-variable exp target linkage))
-        ((assignment? exp)
-         (compile-assignment exp target linkage))
-        ((definition? exp)
-         (compile-definition exp target linkage))
-        ((if? exp) (compile-if exp target linkage))
-        ((lambda? exp) (compile-lambda exp target linkage))
-        ((begin? exp)
-         (compile-sequence (begin-actions exp)
+(define NUM-FUNCTIONS 0)
+
+(define (nonce)
+  (set! NUM-FUNCTIONS (+ NUM-FUNCTIONS 1))
+  (number->string NUM-FUNCTIONS))
+
+(define (make-C-name-from-symbol symbol-val)
+  ;; We can't get any Scheme label to become a C function name,
+  ;;  as certain characters aren't allowed by C. All this does is change
+  ;;  the common bad characters, like
+  
+  (let*
+      ((string-val (symbol->string symbol-val))
+       (string-val (string-replace string-val "-" "_"))
+       (string-val (string-replace string-val "?" "_interrogate"))
+       (string-val (string-replace string-val "!" "_mutate"))
+       (unique-string (string-append string-val (nonce))))
+    unique-string))
+
+(define (make-tmp-var)
+  (string-append "tmp_" (nonce)))
+
+(define (compile expr target linkage)
+  (cond ((self-evaluating? expr)
+         (compile-self-evaluating expr target linkage))
+        ((quoted? expr) (compile-quoted expr target linkage))
+        ((variable? expr)
+         (compile-variable expr target linkage))
+        ((assignment? expr)
+         (compile-assignment expr target linkage))
+        ((definition? expr)
+         (compile-definition expr target linkage))
+        ((if? expr) (compile-if expr target linkage))
+        ((lambda? expr) (compile-lambda expr target linkage))
+        ((begin? expr)
+         (compile-sequence (begin-actions expr)
                            target
                            linkage))
-        ((cond? exp) (compile (cond->if exp) target linkage))
-        ((let? exp) (compile (let->combination exp) target linkage)) ;; Needed for ex 5.50
-        ((application? exp)
-         (compile-application exp target linkage))
+        ((cond? expr) (compile (cond->if expr) target linkage))
+        ((let? expr) (compile (let->combination expr) target linkage)) ;; Needed for ex 5.50
+        ((application? expr)
+         (compile-application expr target linkage))
         (else
-         (error "Unknown expression type -- COMPILE" exp))))
+         (error "Unknown expression type -- COMPILE" expr))))
 
 
 (define (make-instruction-sequence needs modifies statements)
@@ -57,7 +79,10 @@
          (empty-instruction-sequence))
         (else
          (make-instruction-sequence '() '()
-          (list "`((goto (label ,linkage)))")))))
+          (list (string-append
+                 INDENT
+                 (symbol->string linkage)
+                 "();\n")))))) ;; TODO: Maybe needs an extra '}' before the newline
 
 (define (end-with-linkage linkage instruction-sequence)
   (preserving '(continue)
@@ -67,60 +92,82 @@
 
 ;;;simple expressions
 
-(define (compile-self-evaluating exp target linkage)
+(define INDENT "    ")
+
+(define (compile-self-evaluating expr target linkage)
   (end-with-linkage linkage
    (make-instruction-sequence '() (list target)
-    (if (number? exp)
+    (if (number? expr)
         (list
-         (string-append "    " (symbol->string target) " = create_lisp_atom_from_string(\"" (number->string exp) "\");\n"))
+         (string-append INDENT (symbol->string target) " = create_lisp_atom_from_string(\"" (number->string expr) "\");\n"))
         (list
-         (string-append "\"" exp "\";\n"))
+         (string-append INDENT "\"" expr "\";\n"))))))
+
+(define (compile-quoted expr target linkage)
+  (end-with-linkage linkage
+   (make-instruction-sequence '() (list target)
+    (list
+     (let*
+         ;; This is a hack to cast stuff inside the quotation to a string
+         ;;  it won't really work if you quote quotations (like '(a '(b 'c)))
+         ;;  because my parse_lisp_object_from_string does not know how to
+         ;;  handle inputs like `(quote a)` or `(quote (a b))`
+         ((quote-text    (text-of-quotation expr))
+          (output-string (open-output-string))
+          (_             (write quote-text output-string))
+          (quote-string  (get-output-string output-string)))
+
+         
+     (string-append INDENT 
+                    (symbol->string target)
+                    " = parse_lisp_object_from_string(\""
+                    quote-string
+                    "\");\n"))
     ))))
 
-(define (compile-quoted exp target linkage)
-  (end-with-linkage linkage
-   (make-instruction-sequence '() (list target)
-    ;;`((assign ,target (const ,(text-of-quotation exp))))
-    (list
-     (string-append "    "
-                    (symbol->string target) " = create_lisp_atom_from_string(\"'" (symbol->string (text-of-quotation exp)) "\");\n"))
-    )))
-
-(define (compile-variable exp target linkage)
+(define (compile-variable expr target linkage)
   (end-with-linkage linkage
    (make-instruction-sequence '(env) (list target)
-    `((assign ,target
-              (op lookup-variable-value)
-              (const ,exp)
-              (reg env))))))
+    (list
+     (string-append
+       INDENT
+       (symbol->string target)
+       " = environment_lookup(env, \""
+       (symbol->string expr)
+       "\");\n")))))
 
-(define (compile-assignment exp target linkage)
-  (let ((var (assignment-variable exp))
+(define (compile-assignment expr target linkage)
+  ;; TODO: This is a SET, you will need to rewrite this
+  (let ((var (assignment-variable expr))
         (get-value-code
-         (compile (assignment-value exp) 'val 'next)))
+         (compile (assignment-value expr) 'val 'next)))
     (end-with-linkage linkage
      (preserving '(env)
       get-value-code
       (make-instruction-sequence '(env val) (list target)
-       `((perform (op set-variable-value!)
-                  (const ,var)
-                  (reg val)
-                  (reg env))
-         (assign ,target (const ok))))))))
+       (list
+        (string-append
+         INDENT
+         "environment_add(env, \""
+         (symbol->string var)
+         "\", val);\n")
+        ))))))
 
-(define (compile-definition exp target linkage)
-  (let ((var (definition-variable exp))
+(define (compile-definition expr target linkage)
+  (let ((var (definition-variable expr))
         (get-value-code
-         (compile (definition-value exp) 'val 'next)))
+         (compile (definition-value expr) 'val 'next)))
     (end-with-linkage linkage
      (preserving '(env)
       get-value-code
       (make-instruction-sequence '(env val) (list target)
-       `((perform (op define-variable!)
-                  (const ,var)
-                  (reg val)
-                  (reg env))
-         (assign ,target (const ok))))))))
+       (list
+        (string-append
+         INDENT
+         "environment_add(env, \""
+         (symbol->string var)
+         "\", val);\n")
+        ))))))
 
 
 ;;;conditional expressions
@@ -138,18 +185,18 @@
                    (number->string (new-label-number)))))
 ;; end of footnote
 
-(define (compile-if exp target linkage)
-  (let ((t-branch (make-label 'true-branch))
-        (f-branch (make-label 'false-branch))                    
-        (after-if (make-label 'after-if)))
+(define (compile-if expr target linkage)
+  (let ((t-branch (make-label 'true_branch))
+        (f-branch (make-label 'false_branch))                    
+        (after-if (make-label 'after_if)))
     (let ((consequent-linkage
            (if (eq? linkage 'next) after-if linkage)))
-      (let ((p-code (compile (if-predicate exp) 'val 'next))
+      (let ((p-code (compile (if-predicate expr) 'val 'next))
             (c-code
              (compile
-              (if-consequent exp) target consequent-linkage))
+              (if-consequent expr) target consequent-linkage))
             (a-code
-             (compile (if-alternative exp) target linkage)))
+             (compile (if-alternative expr) target linkage)))
         (preserving '(env continue)
          p-code
          (append-instruction-sequences
@@ -172,7 +219,7 @@
 
 ;;;lambda expressions
 
-(define (compile-lambda exp target linkage)
+(define (compile-lambda expr target linkage)
   (let ((proc-entry (make-label 'entry))
         (after-lambda (make-label 'after-lambda)))
     (let ((lambda-linkage
@@ -185,11 +232,11 @@
                     (op make-compiled-procedure)
                     (label ,proc-entry)
                     (reg env)))))
-        (compile-lambda-body exp proc-entry))
+        (compile-lambda-body expr proc-entry))
        after-lambda))))
 
-(define (compile-lambda-body exp proc-entry)
-  (let ((formals (lambda-parameters exp)))
+(define (compile-lambda-body expr proc-entry)
+  (let ((formals (lambda-parameters expr)))
     (append-instruction-sequences
      (make-instruction-sequence '(env proc argl) '(env)
       `(,proc-entry
@@ -199,18 +246,18 @@
                 (const ,formals)
                 (reg argl)
                 (reg env))))
-     (compile-sequence (lambda-body exp) 'val 'return))))
+     (compile-sequence (lambda-body expr) 'val 'return))))
 
 
 ;;;SECTION 5.5.3
 
 ;;;combinations
 
-(define (compile-application exp target linkage)
-  (let ((proc-code (compile (operator exp) 'proc 'next))
+(define (compile-application expr target linkage)
+  (let ((proc-code (compile (operator expr) 'proc 'next))
         (operand-codes
          (map (lambda (operand) (compile operand 'val 'next))
-              (operands exp))))
+              (operands expr))))
     (preserving '(env continue)
      proc-code
      (preserving '(proc continue)
@@ -364,9 +411,44 @@
                           (registers-needed seq1))
               (list-difference (registers-modified seq1)
                                (list first-reg))
-              (append `((save ,first-reg))
-                      (statements seq1)
-                      `((restore ,first-reg))))
+              (let
+                  ((tmp-var-name (make-tmp-var)))
+              (if (eq? first-reg 'env)
+                  ;; env is got a different type
+                  (append
+                   (list
+                    (string-append INDENT
+                                   "Environment* "
+                                   tmp-var-name
+                                   ";\n"
+                                   INDENT
+                                   tmp-var-name
+                                   " = environment_copy(env);\n"))
+                   (statements seq1)
+                   (list
+                    (string-append INDENT
+                                   "env = environment_copy("
+                                   tmp-var-name
+                                   ");\n")))
+                  ;; tmp value is a LispObject
+                  (append
+                   (list
+                    (string-append INDENT
+                                   "LispObject* "
+                                   tmp-var-name
+                                   ";\n"
+                                   INDENT
+                                   tmp-var-name
+                                   " = "
+                                   (symbol->string first-reg)
+                                   ";\n"))
+                   (statements seq1)
+                   (list
+                    (string-append INDENT
+                                   (symbol->string first-reg)
+                                   " = "
+                                   tmp-var-name
+                                   ";\n"))))))
              seq2)
             (preserving (cdr regs) seq1 seq2)))))
 

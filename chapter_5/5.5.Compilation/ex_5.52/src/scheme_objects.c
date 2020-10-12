@@ -336,16 +336,18 @@ char** input_to_tokens(char* input) {
     return tokenize_string(cleaned_input);
 }
 
+LispObject* parse_lisp_object_from_string(char* some_lisp_text) {
+    return parse_input(input_to_tokens(some_lisp_text));
+}
+
 LispObject* read_and_parse_input(void){
     LispObject* output_obj;
 
     char input[MAX_INPUT_SIZE];
-    char** tokens;
 
     fgets(input, MAX_INPUT_SIZE, stdin);
     if (strlen(input) > 1) {
-        tokens = input_to_tokens(input);
-        output_obj = parse_input(tokens);
+        output_obj = parse_lisp_object_from_string(input);
     }
     else {
         output_obj = &LispNull;
