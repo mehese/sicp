@@ -4,7 +4,8 @@
 (#%require racket/string)
 (#%require (only racket/base open-output-string
                              get-output-string
-                             write))
+                             write
+                             format))
 
 ;;(#%require (only racket/string string-replace))
 ;; I think it's ok to use functions instead of labels
@@ -15,7 +16,7 @@
 ;;   function variables (abuse the C stack)
 
 ;;;;;;;;
-(include "../scheme-syntax.scm")
+(include "scheme-syntax.scm")
 (include "../machine.scm")
 (include "../eceval-support.scm")
 ;;(include "../compiler-support.scm")
@@ -54,7 +55,8 @@
 '(compile '(begin (define a 2) (define b 3) (+ a b)))
 
 ;; if
-'(compile '(if 2 2 3))
+'(compile '(if 2 2 3) 'val 'next) ;; works
+'(compile '(if 2 (if #f 2 69) 3) 'val 'next) ;; works
 
 ;; preserving
 '(preserving
@@ -67,7 +69,7 @@
   '((env) (val) ("    val = environment_lookup(\"a\", env);\n"))
 '((val env) (val) ("    val = environment_lookup(\"b\", env);\n")))
 
-(define (fix-instruction-list instruction-list)
+(define (decorate-main-instructions instruction-list)
   "Should do the following
    - add a main function
    - add a 'return 0};' at the end of the main function"
@@ -83,18 +85,7 @@ int main() {
     return EXIT_SUCCESS;
 };
 ")
-  (define (insert-postfix before-main after-main)
-    (if (or (null? after-main) (symbol? (car after-main)))
-        (append before-main
-                (list POSTFIX)
-                after-main)
-        (insert-postfix (append before-main (list (car after-main)))
-                        (cdr after-main))))
-  (cons PREFIX (insert-postfix '() instruction-list)))
-
-(define (instruction-labels instruction-sequence)
-  ;; TODO: fill me
-  '())
+  (append (list PREFIX) instruction-list (list POSTFIX)))
 
 (define (instructions->C instruction-sequence)
   (let*
@@ -113,12 +104,14 @@ LispObject *expr, *proc, *val, *argl;
 Environment *env;
 "                                                         )
        (instruction-list (statements instruction-sequence))
-       (labels   (instruction-labels instruction-sequence))
+       (main-code (main-instructions instruction-list))
+       (aux-instructions (auxiliary-instructions instruction-list))
+       (labels   (instruction-labels instruction-list))
        (END-TEXT "
 /* footer here */
 "                                                     )
-       (code-contents (fix-instruction-list instruction-list))
-       (MAIN-CODE (apply string-append code-contents)))
+       (main-code (decorate-main-instructions main-code))
+       (MAIN-CODE (apply string-append main-code)))
     (string-append START-TEXT
                    MAIN-CODE
                    END-TEXT)))

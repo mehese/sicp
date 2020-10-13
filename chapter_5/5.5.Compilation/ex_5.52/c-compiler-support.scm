@@ -97,11 +97,13 @@
 (define (compile-self-evaluating expr target linkage)
   (end-with-linkage linkage
    (make-instruction-sequence '() (list target)
-    (if (number? expr)
-        (list
-         (string-append INDENT (symbol->string target) " = create_lisp_atom_from_string(\"" (number->string expr) "\");\n"))
-        (list
-         (string-append INDENT "\"" expr "\";\n"))))))
+    (cond
+      ((boolean? expr)
+        (list (string-append INDENT (symbol->string target) " = create_lisp_atom_from_string(\"" (format "~a" expr) "\");\n")))
+      ((number? expr)
+        (list (string-append INDENT (symbol->string target) " = create_lisp_atom_from_string(\"" (number->string expr) "\");\n")))
+      (else
+       (list (string-append INDENT "\"" expr "\";\n")))))))
 
 (define (compile-quoted expr target linkage)
   (end-with-linkage linkage
@@ -173,40 +175,91 @@
 ;;;conditional expressions
 
 ;;;labels (from footnote)
-(define label-counter 0)
-
-(define (new-label-number)
-  (set! label-counter (+ 1 label-counter))
-  label-counter)
 
 (define (make-label name)
   (string->symbol
-    (string-append (symbol->string name)
-                   (number->string (new-label-number)))))
+    (string-append (symbol->string name) (nonce))))
+
 ;; end of footnote
 
 (define (compile-if expr target linkage)
-  (let ((t-branch (make-label 'true_branch))
-        (f-branch (make-label 'false_branch))                    
-        (after-if (make-label 'after_if)))
-    (let ((consequent-linkage
-           (if (eq? linkage 'next) after-if linkage)))
-      (let ((p-code (compile (if-predicate expr) 'val 'next))
-            (c-code
-             (compile
-              (if-consequent expr) target consequent-linkage))
-            (a-code
-             (compile (if-alternative expr) target linkage)))
-        (preserving '(env continue)
-         p-code
-         (append-instruction-sequences
-          (make-instruction-sequence '(val) '()
-           `((test (op false?) (reg val))
-             (branch (label ,f-branch))))
-          (parallel-instruction-sequences
-           (append-instruction-sequences t-branch c-code)
-           (append-instruction-sequences f-branch a-code))
-          after-if))))))
+"
+save env ☑
+[MAIN OF p-code] ☑
+restore env ☑
+
+if is_true(val) { ☑
+[MAIN OF c-code] ☑
+} else { ☑
+[MAIN OF a-code] ☑
+}
+linkage ☑
+
+[AUXILIARIES OF p-code]
+[AUXILIARIES OF c-code]
+[AUXILIARIES OF a-code]
+"
+  (let*
+      ((p-code (compile (if-predicate expr) 'val 'next))
+       (c-code (compile (if-consequent expr) 'val 'next))
+       (a-code (compile (if-alternative expr) 'val 'next))
+       (p-main (make-instruction-sequence (registers-needed p-code)
+                                          (registers-modified p-code)
+                                          (main-instructions (statements p-code))))
+       (p-main-protected (preserve-one-register p-main 'env))
+       (all-reg-needed   (set-union (registers-needed p-main-protected)
+                                    (registers-needed a-code)
+                                    (registers-needed c-code)))
+       (all-reg-modified (set-union (registers-modified p-main-protected)
+                                    (registers-modified a-code)
+                                    (registers-modified c-code)))  
+       (c-main (main-instructions (statements c-code)))
+       (a-main (main-instructions (statements a-code)))
+       (p-aux  (auxiliary-instructions (statements p-code)))
+       (c-aux  (auxiliary-instructions (statements c-code)))
+       (a-aux  (auxiliary-instructions (statements a-code)))
+       )
+    ;; TODO: return not just the instructions but the modified and needed
+    ;;  registers
+    (make-instruction-sequence
+     all-reg-needed
+     all-reg-modified
+     (append
+      (statements p-main-protected)
+      (list (string-append INDENT "if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {\n"))
+      ;; Indent lines of conequent
+      (map (lambda (line) (string-append INDENT line)) c-main)
+      (list (string-append INDENT "} else {\n"))
+      (map (lambda (line) (string-append INDENT line)) a-main)
+      (list (string-append INDENT "};\n"))
+      (statements (compile-linkage linkage))
+      p-aux
+      c-aux
+      a-aux
+      ))
+
+))
+;  (let ((t-branch (make-label 'true_branch))
+;        (f-branch (make-label 'false_branch))                    
+;        (after-if (make-label 'after_if)))
+;    (let ((consequent-linkage
+;           (if (eq? linkage 'next) after-if linkage)))
+;      (let ((p-code (compile (if-predicate expr) 'val 'next))
+;            (c-code
+;             (compile
+;              (if-consequent expr) target consequent-linkage))
+;            (a-code
+;             (compile (if-alternative expr) target linkage)))
+;        (preserving '(env continue)
+;         p-code
+;         (append-instruction-sequences
+;          (make-instruction-sequence '(val) '()
+;           `((test (op false?) (reg val))
+;             (branch (label ,f-branch))))
+;          (parallel-instruction-sequences
+;           (append-instruction-sequences t-branch c-code)
+;           (append-instruction-sequences f-branch a-code))
+;          after-if))))))
 
 ;;; sequences
 
@@ -353,6 +406,34 @@
 ;; footnote
 (define all-regs '(env proc val argl continue))
 
+;; Needed for stuff
+
+(define (instruction-labels instruction-sequence)
+  (define (iter-labels labels-so-far rest-of-sequence)
+    (if (null? rest-of-sequence)
+        (reverse labels-so-far)
+        (let
+            ((current-instruction (car rest-of-sequence)))
+          (if (symbol? current-instruction)
+              (iter-labels (cons current-instruction labels-so-far)
+                           (cdr rest-of-sequence))
+              (iter-labels labels-so-far
+                           (cdr rest-of-sequence))))))
+  (iter-labels '() instruction-sequence))
+
+(define (main-instructions seq)
+  (define (non-symbols instructions-so-far instructions-left)
+    (if (or (null? instructions-left) (symbol? (car instructions-left)))
+        instructions-so-far
+        (non-symbols
+         (append instructions-so-far (list (car instructions-left)))
+         (cdr instructions-left))))
+  (non-symbols '() seq))
+
+(define (auxiliary-instructions seq)
+  (if (or (null? seq) (symbol? (car seq)))
+      seq
+      (auxiliary-instructions (cdr seq))))
 
 ;;;SECTION 5.5.4
 
@@ -370,7 +451,6 @@
 
 (define (modifies-register? seq reg)
   (memq reg (registers-modified seq)))
-
 
 (define (append-instruction-sequences . seqs)
   (define (append-2-sequences seq1 seq2)
@@ -393,11 +473,86 @@
         ((memq (car s1) s2) (list-union (cdr s1) s2))
         (else (cons (car s1) (list-union (cdr s1) s2)))))
 
+(define (set-union . args)
+  (if (null? args)
+      '()
+      (list-union (car args) (apply set-union (cdr args)))))
+
 (define (list-difference s1 s2)
   (cond ((null? s1) '())
         ((memq (car s1) s2) (list-difference (cdr s1) s2))
         (else (cons (car s1)
                     (list-difference (cdr s1) s2)))))
+
+(define (filter filter-fun lst)
+  (define (iter seen left)
+    (if (null? left)
+        seen
+        (let
+            ((curr-elem (car left)))
+          (if (filter-fun curr-elem)
+              (iter
+               (cons curr-elem seen)
+               (cdr left))
+              (iter
+               seen
+               (cdr left))))))
+  (iter '() lst))
+
+(define (preserve-one-register seq reg-name)
+  (if (modifies-register? seq reg-name)
+      ;; We need to save and restore the register
+      ;; TO DO this returns instruction lists now
+      (let*
+          ((tmp-var-name (make-tmp-var))
+           (needed       (registers-needed seq))
+           (modified     (registers-modified seq))
+           (modified     (filter (lambda (reg) (not (eq? 'env reg))) modified)))
+        (if (eq? reg-name 'env)
+            ;; Wrap env save/restore around it
+            (make-instruction-sequence
+             needed
+             modified
+             (append
+              (list
+               (string-append INDENT
+                              "Environment* "
+                              tmp-var-name
+                              ";\n"
+                              INDENT
+                              tmp-var-name
+                              " = environment_copy(env);\n"))
+              (statements seq)
+              (list
+               (string-append INDENT
+                              "env = environment_copy("
+                              tmp-var-name
+                              ");\n"))))
+            ;; Wrap LispObject save/restore around it
+            (make-instruction-sequence
+             needed
+             modified
+            (append
+             (list
+              (string-append INDENT
+                             "LispObject* "
+                             tmp-var-name
+                             ";\n"
+                             INDENT
+                             tmp-var-name
+                             " = "
+                             (symbol->string reg-name)
+                             ";\n"))
+             (statements seq)
+             (list
+              (string-append INDENT
+                             (symbol->string reg-name)
+                             " = "
+                             tmp-var-name
+                             ";\n"))))))
+
+      ;; Nothing to do, return original instruction sequence
+      seq))
 
 (define (preserving regs seq1 seq2)
   (if (null? regs)

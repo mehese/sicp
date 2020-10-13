@@ -16,7 +16,17 @@ int main() {
 
     env = environment_init();
 
-    val = parse_lisp_object_from_string("(a b c)");
+    val = create_lisp_atom_from_string("2");
+    if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
+        val = create_lisp_atom_from_string("#f");
+        if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
+            val = create_lisp_atom_from_string("2");
+        } else {
+            val = create_lisp_atom_from_string("69");
+        };
+    } else {
+        val = create_lisp_atom_from_string("3");
+    };
 
     print_lisp_object(val);
     putchar(10); /* print an extra newline */
