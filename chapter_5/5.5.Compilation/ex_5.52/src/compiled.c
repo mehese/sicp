@@ -12,25 +12,29 @@ LispObject *expr, *proc, *val, *argl;
 
 Environment *env;
 
+void entry1(void);
+
 int main() {
 
     env = environment_init();
 
-    val = create_lisp_atom_from_string("2");
-    if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
-        val = create_lisp_atom_from_string("#f");
-        if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
-            val = create_lisp_atom_from_string("2");
-        } else {
-            val = create_lisp_atom_from_string("69");
-        };
-    } else {
-        val = create_lisp_atom_from_string("3");
-    };
+    val = create_empty_lisp_object(COMPILED_PROCEDURE);
+    val->CompoundFunEnvironment = env;
+    val->CompiledFun = &entry1;
 
     print_lisp_object(val);
     putchar(10); /* print an extra newline */
     return EXIT_SUCCESS;
+};
+
+
+void entry1(void) {
+    env = environment_copy(proc->CompoundFunEnvironment);
+    environment_add(env, "x", argl->CarPointer);
+    argl = argl->CdrPointer;
+    environment_add(env, "y", argl->CarPointer);
+    argl = argl->CdrPointer;
+    val = create_lisp_atom_from_string("2");
 };
 
 /* footer here */

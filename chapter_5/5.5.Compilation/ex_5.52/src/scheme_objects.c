@@ -11,7 +11,8 @@ LispObject LispNull = {
     .NumberVal = 0.0,
     .BoolVal = false,
     .SymbolVal = "nil",
-    .PrimitiveFun = NULL
+    .PrimitiveFun = NULL,
+    .CompiledFun = NULL
 };
 
 
@@ -47,7 +48,10 @@ void print_lisp_object(LispObject* lisp_obj) {
             printf(")");
             //print_environment(lisp_obj->CompoundFunEnvironment);
             break;
-        case PAIR: 
+        case COMPILED_PROCEDURE:
+            printf("compiled$%p", lisp_obj->CompiledFun);
+            break;
+         case PAIR: 
             printf("[");
             print_lisp_object(lisp_obj->CarPointer);
             print_lisp_object(lisp_obj->CdrPointer);

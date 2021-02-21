@@ -7,8 +7,8 @@
 #define FLOAT_TOL 1e-6
 
 typedef enum LispType {
-    NIL, BOOLEAN, NUMBER, SYMBOL, PRIMITIVE_PROC, COMPOUND_PROCEDURE, 
-    QUOTED, PAIR 
+    NIL, BOOLEAN, NUMBER, SYMBOL, PRIMITIVE_PROC, COMPOUND_PROCEDURE,
+    COMPILED_PROCEDURE, QUOTED, PAIR 
 } LispType;
 
 //typedef struct Environment;
@@ -38,7 +38,11 @@ typedef struct LispObject {
     char CompoundFunArgNames[MAX_LAMBDA_ARGS][MAX_SYMBOL_SIZE];
     struct LispObject* CompoundFunInstructionSequence;
     struct Environment* CompoundFunEnvironment;
-
+    /* Compiled Function Impl:
+     *  a pointer to a C function that contains the compiled code
+     * */
+    void (*CompiledFun)(void);
+ 
  } LispObject;
 
 extern LispObject LispNull;

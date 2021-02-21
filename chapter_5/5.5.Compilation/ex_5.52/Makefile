@@ -29,4 +29,4 @@ test: scheme_objects.o scheme_tests.o scheme_env.o scheme_primitives.o
 	$(CC) $^ -lcheck -lsubunit -lm -lpthread -lrt -o scheme_$@
 
 clean:
-	rm -rfv scheme scheme_test *.o
+	rm -rfv scheme scheme_test *.o *.scm~

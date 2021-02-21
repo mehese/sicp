@@ -63,6 +63,19 @@
   '(env) ;; env is a special case, as its type in `Environment`
   '((env) (val env) ("    val = environment_lookup(\"a\", env);\n"))
   '((env) (val) ("    val = environment_lookup(\"b\", env);\n")))
+;; lambda
+
+'(compile '(lambda (x y) 2) 'val 'next) ;; works
+
+
+;; TODO: for these two the mains and the auxes are being mixed, bad bad
+(compile '(begin (lambda (x y) 2) +) 'val 'next)
+'(compile '(begin (lambda (x y) 2) (lambda (a b) 3)) 'val 'next) 
+
+;; Application
+
+'(compile '(+ 2 3) 'val 'next)
+'(compile '(+ (- 1 1) 3) 'val 'next)
 
 '(preserving
   '(val)
@@ -84,8 +97,35 @@ int main() {
     putchar(10); /* print an extra newline */
     return EXIT_SUCCESS;
 };
+
 ")
   (append (list PREFIX) instruction-list (list POSTFIX)))
+
+(define (generate-definitions-of-labels instruction-sequence)
+  (define (iter seq voids-declared)
+    (cond ((null? seq)
+           voids-declared)
+          ((symbol? (car seq))
+           (iter (cdr seq)
+                 (append
+                  voids-declared
+                  (list (string-append "void " (symbol->string (car seq)) "(void);\n")))))
+          (else (iter (cdr seq) voids-declared))))
+  (apply string-append (iter instruction-sequence '())))
+
+(define (generate-label-code aux-instructions)
+  (if (null? aux-instructions)
+      "\n"
+      (let*
+          ((label-name (car aux-instructions))
+           (code-without-this-label (cdr aux-instructions))
+           (code-for-this-label (main-instructions code-without-this-label))
+           (rest-of-instructions  (auxiliary-instructions code-without-this-label)))
+        (string-append
+         "\nvoid "(symbol->string label-name) "(void) {\n"
+         (apply string-append code-for-this-label)
+         "};"
+         (generate-label-code rest-of-instructions)))))
 
 (define (instructions->C instruction-sequence)
   (let*
@@ -102,21 +142,25 @@ int main() {
 LispObject *expr, *proc, *val, *argl;
 
 Environment *env;
+
 "                                                         )
        (instruction-list (statements instruction-sequence))
+       (DEFINITIONS (generate-definitions-of-labels instruction-list))
        (main-code (main-instructions instruction-list))
        (aux-instructions (auxiliary-instructions instruction-list))
-       (labels   (instruction-labels instruction-list))
+       (LABEL-CODE (generate-label-code aux-instructions))
        (END-TEXT "
 /* footer here */
 "                                                     )
        (main-code (decorate-main-instructions main-code))
        (MAIN-CODE (apply string-append main-code)))
     (string-append START-TEXT
+                   DEFINITIONS
                    MAIN-CODE
+                   LABEL-CODE
                    END-TEXT)))
 
-(define (show instruction-sequence)
+(define (code instruction-sequence)
   (display (instructions->C instruction-sequence)))
     
 

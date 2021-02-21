@@ -74,7 +74,7 @@
 (define (compile-linkage linkage)
   (cond ((eq? linkage 'return)
          (make-instruction-sequence '(continue) '()
-          (list "};\n\n")))
+          (list "")))
         ((eq? linkage 'next)
          (empty-instruction-sequence))
         (else
@@ -227,7 +227,7 @@ linkage ☑
      (append
       (statements p-main-protected)
       (list (string-append INDENT "if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {\n"))
-      ;; Indent lines of conequent
+      ;; Indent lines of consequent
       (map (lambda (line) (string-append INDENT line)) c-main)
       (list (string-append INDENT "} else {\n"))
       (map (lambda (line) (string-append INDENT line)) a-main)
@@ -272,33 +272,60 @@ linkage ☑
 
 ;;;lambda expressions
 
+;(define (compile-lambda expr target linkage)
+;  (let ((proc-entry (make-label 'entry))
+;        (after-lambda (make-label 'after-lambda)))
+;    (let ((lambda-linkage
+;           (if (eq? linkage 'next) after-lambda linkage)))
+;      (append-instruction-sequences
+;       (tack-on-instruction-sequence
+;        (end-with-linkage lambda-linkage
+;         (make-instruction-sequence '(env) (list target)
+;          `((assign ,target
+;                    (op make-compiled-procedure)
+;                    (label ,proc-entry)
+;                    (reg env)))))
+;        (compile-lambda-body expr proc-entry))
+;       after-lambda))))
+
 (define (compile-lambda expr target linkage)
-  (let ((proc-entry (make-label 'entry))
-        (after-lambda (make-label 'after-lambda)))
-    (let ((lambda-linkage
-           (if (eq? linkage 'next) after-lambda linkage)))
-      (append-instruction-sequences
+  (let ((proc-entry (make-label 'entry)))
        (tack-on-instruction-sequence
-        (end-with-linkage lambda-linkage
+        (end-with-linkage linkage
          (make-instruction-sequence '(env) (list target)
-          `((assign ,target
-                    (op make-compiled-procedure)
-                    (label ,proc-entry)
-                    (reg env)))))
-        (compile-lambda-body expr proc-entry))
-       after-lambda))))
+          ;;`((assign ,target (op make-compiled-procedure) (label ,proc-entry)  (reg env)))
+          (list
+           (string-append INDENT (symbol->string target) " = create_empty_lisp_object(COMPILED_PROCEDURE);\n")
+           (string-append INDENT (symbol->string target) "->CompoundFunEnvironment = env;\n")
+           (string-append INDENT (symbol->string target) "->CompiledFun = &" (symbol->string proc-entry) ";\n")
+           )))
+        (compile-lambda-body expr proc-entry))))
+
+(define (compile-extend-env-with-argl names)
+  (define (iterate-over-names names-left instructions)
+    (if (null? names-left)
+        instructions
+        (iterate-over-names
+         (cdr names-left)
+         (append instructions
+                 (list (string-append INDENT "environment_add(env, \"" (symbol->string (car names-left)) "\", argl->CarPointer);\n")
+                       (string-append INDENT "argl = argl->CdrPointer;\n")
+                       )))
+                            
+        
+          ))
+  (iterate-over-names names '()))
 
 (define (compile-lambda-body expr proc-entry)
   (let ((formals (lambda-parameters expr)))
     (append-instruction-sequences
      (make-instruction-sequence '(env proc argl) '(env)
-      `(,proc-entry
-        (assign env (op compiled-procedure-env) (reg proc))
-        (assign env
-                (op extend-environment)
-                (const ,formals)
-                (reg argl)
-                (reg env))))
+      (append
+       (list
+        proc-entry
+        (string-append INDENT "env = environment_copy(proc->CompoundFunEnvironment);\n"))
+       (compile-extend-env-with-argl formals)
+      ))
      (compile-sequence (lambda-body expr) 'val 'return))))
 
 
@@ -460,7 +487,7 @@ linkage ☑
                                   (registers-modified seq1)))
      (list-union (registers-modified seq1)
                  (registers-modified seq2))
-     (append (statements seq1) (statements seq2))))
+     (append (statements seq1) (statements seq2)))) ;; TODO: Modify me to take into account main code vs label code
   (define (append-seq-list seqs)
     (if (null? seqs)
         (empty-instruction-sequence)
