@@ -43,7 +43,7 @@
 
 ;; self evaluating
 '(compile 2 'val 'next)
-'(show (compile 2 'val 'next)) ;; works
+'(code (compile 2 'val 'next)) ;; works
 
 ;; quotation
 '(compile ''a 'val 'next) ;; works
@@ -66,10 +66,8 @@
 ;; lambda
 
 '(compile '(lambda (x y) 2) 'val 'next) ;; works
-
-
+'(compile '(begin (lambda (x y) 2) +) 'val 'next) ;; works
 ;; TODO: for these two the mains and the auxes are being mixed, bad bad
-(compile '(begin (lambda (x y) 2) +) 'val 'next)
 '(compile '(begin (lambda (x y) 2) (lambda (a b) 3)) 'val 'next) 
 
 ;; Application

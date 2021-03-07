@@ -318,15 +318,17 @@ linkage ☑
 
 (define (compile-lambda-body expr proc-entry)
   (let ((formals (lambda-parameters expr)))
-    (append-instruction-sequences
-     (make-instruction-sequence '(env proc argl) '(env)
-      (append
-       (list
-        proc-entry
-        (string-append INDENT "env = environment_copy(proc->CompoundFunEnvironment);\n"))
-       (compile-extend-env-with-argl formals)
-      ))
-     (compile-sequence (lambda-body expr) 'val 'return))))
+    (tack-on-instruction-sequence
+     (make-instruction-sequence '() '() (list proc-entry))
+     (append-instruction-sequences
+      (make-instruction-sequence '(env proc argl) '(env)
+                                 (append
+                                  (list
+                                   ;;proc-entry
+                                   (string-append INDENT "env = environment_copy(proc->CompoundFunEnvironment);\n"))
+                                  (compile-extend-env-with-argl formals)
+                                  ))
+      (compile-sequence (lambda-body expr) 'val 'return)))))
 
 
 ;;;SECTION 5.5.3
@@ -480,6 +482,7 @@ linkage ☑
   (memq reg (registers-modified seq)))
 
 (define (append-instruction-sequences . seqs)
+  ;;(display "Called!") (display seqs) (newline)
   (define (append-2-sequences seq1 seq2)
     (make-instruction-sequence
      (list-union (registers-needed seq1)
@@ -487,7 +490,11 @@ linkage ☑
                                   (registers-modified seq1)))
      (list-union (registers-modified seq1)
                  (registers-modified seq2))
-     (append (statements seq1) (statements seq2)))) ;; TODO: Modify me to take into account main code vs label code
+     ;;(append (statements seq1) (statements seq2)))) 
+     (append (main-instructions (statements seq1))
+             (main-instructions (statements seq2))
+             (auxiliary-instructions (statements seq1))
+             (auxiliary-instructions (statements seq2)))))
   (define (append-seq-list seqs)
     (if (null? seqs)
         (empty-instruction-sequence)
@@ -526,7 +533,7 @@ linkage ☑
                (cdr left))))))
   (iter '() lst))
 
-(define (preserve-one-register seq reg-name)
+(define (preserve-one-register seq reg-name) ;; TODO: Change the append to save/restore around the main
   (if (modifies-register? seq reg-name)
       ;; We need to save and restore the register
       ;; TO DO this returns instruction lists now
@@ -606,12 +613,13 @@ linkage ☑
                                    INDENT
                                    tmp-var-name
                                    " = environment_copy(env);\n"))
-                   (statements seq1)
+                   (main-instructions (statements seq1))
                    (list
                     (string-append INDENT
                                    "env = environment_copy("
                                    tmp-var-name
-                                   ");\n")))
+                                   ");\n"))
+                   (auxiliary-instructions (statements seq1)))
                   ;; tmp value is a LispObject
                   (append
                    (list
@@ -624,13 +632,14 @@ linkage ☑
                                    " = "
                                    (symbol->string first-reg)
                                    ";\n"))
-                   (statements seq1)
+                   (main-instructions (statements seq1))
                    (list
                     (string-append INDENT
                                    (symbol->string first-reg)
                                    " = "
                                    tmp-var-name
-                                   ";\n"))))))
+                                   ";\n"))
+                   (auxiliary-instructions (statements seq1))))))
              seq2)
             (preserving (cdr regs) seq1 seq2)))))
 
