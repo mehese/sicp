@@ -19,7 +19,6 @@
 (include "scheme-syntax.scm")
 (include "../machine.scm")
 (include "../eceval-support.scm")
-;;(include "../compiler-support.scm")
 (include "c-compiler-support.scm")
 (include "metacircular-scheme.scm")
 
@@ -57,28 +56,52 @@
 ;; if
 '(compile '(if 2 2 3) 'val 'next) ;; works
 '(compile '(if 2 (if #f 2 69) 3) 'val 'next) ;; works
+'(compile '(cond ((= 1 2) 'no-1)
+                 ((= 2 2) 'yes-2)
+                 (else 'whut))
+          'val 'next) ;; works
+'(compile '(cond ((= 1 1) 'yes-1)
+                 ((= 2 3) 'no-2)
+                 (else 'whut))
+          'val 'next) ;; works
+'(compile '(cond ((= 1 2) 'no-1)
+                 ((= 2 3) 'no-2)
+                 (else 'yes-else))
+          'val 'next) ;; works
 
-;; preserving
-'(preserving
-  '(env) ;; env is a special case, as its type in `Environment`
-  '((env) (val env) ("    val = environment_lookup(\"a\", env);\n"))
-  '((env) (val) ("    val = environment_lookup(\"b\", env);\n")))
 ;; lambda
-
 '(compile '(lambda (x y) 2) 'val 'next) ;; works
 '(compile '(begin (lambda (x y) 2) +) 'val 'next) ;; works
-;; TODO: for these two the mains and the auxes are being mixed, bad bad
-'(compile '(begin (lambda (x y) 2) (lambda (a b) 3)) 'val 'next) 
+'(compile '(begin (lambda (x y) 2) (lambda (a b) 3)) 'val 'next) ;; works
 
-;; Application
+;; Application Primitives
+'(compile '(+ 2 3) 'val 'next) ;; works
+'(compile '(+ (- 1 1) 3) 'val 'next) ;; works
 
-'(compile '(+ 2 3) 'val 'next)
-'(compile '(+ (- 1 1) 3) 'val 'next)
+;; Application Compiled
+'(compile '((lambda (x) 2) 5) 'val 'next) ;; works
+'(compile '((lambda (x) (+ x 2)) 5) 'val 'next) ;; works
+'(compile '(begin (define (a x) (+ x 2)) (a 3)) 'val 'next) ;; works
+'(compile '(begin (define (equals-2 x) (if (= x 2) 1 0)) (equals-2 3)) 'val 'next) ;; works
+'(compile '((lambda (x y z) (- x 1)) 5 6 7) 'val 'next) ;; works
+'(compile '((lambda () 2)) 'val 'next) ;; works
 
-'(preserving
-  '(val)
-  '((env) (val) ("    val = environment_lookup(\"a\", env);\n"))
-'((val env) (val) ("    val = environment_lookup(\"b\", env);\n")))
+
+;; Recursive Functions
+'(compile
+  '(begin
+     (define (count n)
+       (if (< n 1)
+           n
+           (count (- n 1))))
+      (count 2))
+  'val 'next)
+
+'(compile
+  '(begin
+    (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
+    (fib 6)) 'val 'next)
+
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following

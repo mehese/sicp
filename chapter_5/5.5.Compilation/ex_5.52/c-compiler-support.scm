@@ -350,7 +350,8 @@ linkage ☑
   (let ((operand-codes (reverse operand-codes)))
     (if (null? operand-codes)
         (make-instruction-sequence '() '(argl)
-         '((assign argl (const ()))))
+         (list
+          (string-append INDENT "argl = &LispNull;\n")))
         (let ((code-to-get-last-arg
                (append-instruction-sequences
                 (car operand-codes)
@@ -408,7 +409,7 @@ linkage ☑
         (string-append INDENT INDENT (symbol->string target) " = apply(proc, argl);\n")
         (string-append INDENT "} else {\n") ;; compiled case
         ;;  (assign val (op compiled-procedure-entry) (reg proc)) (goto (reg val))
-        (string-append INDENT INDENT "putchar(10);\n") ;; TODO
+        (string-append INDENT INDENT "proc->CompiledFun();\n") 
         (string-append INDENT "};\n")
         ))
 
