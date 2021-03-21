@@ -8,6 +8,18 @@
 #include "scheme_objects.h"
 #include "scheme_primitives.h"
 
+/* Helpers for compiler */
+
+LispObject* cons(LispObject* car_obj, LispObject* cdr_obj) {
+    LispObject* obj_out;
+    obj_out = create_empty_lisp_object(PAIR);
+    obj_out->CarPointer = car_obj;
+    obj_out->CdrPointer = cdr_obj;
+    return obj_out;
+}
+
+
+
 /* Primitives */
 
 LispObject* clone_lisp_object(LispObject* in) {

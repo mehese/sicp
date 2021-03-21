@@ -354,8 +354,10 @@ linkage ☑
         (let ((code-to-get-last-arg
                (append-instruction-sequences
                 (car operand-codes)
+                ;; Takes the role of '(assign argl (op list) (reg val))
                 (make-instruction-sequence '(val) '(argl)
-                 '((assign argl (op list) (reg val)))))))
+                 (list
+                  (string-append INDENT "argl = cons(val, &LispNull);\n"))))))
           (if (null? (cdr operand-codes))
               code-to-get-last-arg
               (preserving '(env)
@@ -364,12 +366,20 @@ linkage ☑
                 (cdr operand-codes))))))))
 
 (define (code-to-get-rest-args operand-codes)
-  (let ((code-for-next-arg
+  (let* ((code-for-next-arg
          (preserving '(argl)
           (car operand-codes)
+          ;; '(assign argl (op cons) (reg val) (reg argl))
+          ;; One way
+          ;;    LispObject* tmp_1;
+          ;;    tmp_1 = create_empty_lisp_object(PAIR);
+          ;;    tmp_1->CdrPointer = argl;
+          ;;    tmp_1->CarPointer = val;
+          ;;    argl = tmp_1;
           (make-instruction-sequence '(val argl) '(argl)
-           '((assign argl
-              (op cons) (reg val) (reg argl)))))))
+           (list
+            (string-append INDENT "argl = cons(val, argl);\n")
+            )))))
     (if (null? (cdr operand-codes))
         code-for-next-arg
         (preserving '(env)
@@ -384,24 +394,43 @@ linkage ☑
         (after-call (make-label 'after-call)))
     (let ((compiled-linkage
            (if (eq? linkage 'next) after-call linkage)))
-      (append-instruction-sequences
-       (make-instruction-sequence '(proc) '()
-        `((test (op primitive-procedure?) (reg proc))
-          (branch (label ,primitive-branch))))
-       (parallel-instruction-sequences
-        (append-instruction-sequences
-         compiled-branch
-         (compile-proc-appl target compiled-linkage))
-        (append-instruction-sequences
-         primitive-branch
-         (end-with-linkage linkage
-          (make-instruction-sequence '(proc argl)
-                                     (list target)
-           `((assign ,target
-                     (op apply-primitive-procedure)
-                     (reg proc)
-                     (reg argl)))))))
-       after-call))))
+      ;;
+      ;;    if (proc->type == PRIMITIVE_PROC) {
+      ;;        printf("I am primitive\n");
+      ;;    } else {
+      ;;        printf("I am compiled\n");
+      ;;    }
+      (make-instruction-sequence
+       '(proc argl) ;; needs
+       '(list target) ;; modifies
+       (list ;; instructions
+        (string-append INDENT "if (proc->type == PRIMITIVE_PROC) {\n") ;; primitive case
+        (string-append INDENT INDENT (symbol->string target) " = apply(proc, argl);\n")
+        (string-append INDENT "} else {\n") ;; compiled case
+        ;;  (assign val (op compiled-procedure-entry) (reg proc)) (goto (reg val))
+        (string-append INDENT INDENT "putchar(10);\n") ;; TODO
+        (string-append INDENT "};\n")
+        ))
+
+;      (append-instruction-sequences
+;       (make-instruction-sequence '(proc) '()
+;        `((test (op primitive-procedure?) (reg proc))
+;          (branch (label ,primitive-branch))))
+;       (parallel-instruction-sequences
+;        (append-instruction-sequences
+;         compiled-branch
+;         (compile-proc-appl target compiled-linkage))
+;        (append-instruction-sequences
+;         primitive-branch
+;         (end-with-linkage linkage
+;          (make-instruction-sequence '(proc argl)
+;                                     (list target)
+;           `((assign ,target
+;                     (op apply-primitive-procedure)
+;                     (reg proc)
+;                     (reg argl)))))))
+;       after-call)
+      )))
 
 ;;;applying compiled procedures
 

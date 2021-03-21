@@ -51,7 +51,7 @@ void print_lisp_object(LispObject* lisp_obj) {
         case COMPILED_PROCEDURE:
             printf("compiled$%p", lisp_obj->CompiledFun);
             break;
-         case PAIR: 
+        case PAIR: 
             printf("[");
             print_lisp_object(lisp_obj->CarPointer);
             print_lisp_object(lisp_obj->CdrPointer);

@@ -8,6 +8,7 @@ LispObject* lisp_car(LispObject* o);
 LispObject* lisp_cdr(LispObject* o);
 LispObject* lisp_cadr(LispObject* o);
 LispObject* lisp_add(LispObject* o);
+LispObject* cons(LispObject* car_obj, LispObject* cdr_obj);
 
 extern LispObject Car;
 extern LispObject Cdr;
