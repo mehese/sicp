@@ -77,6 +77,7 @@
 ;; Application Primitives
 '(compile '(+ 2 3) 'val 'next) ;; works
 '(compile '(+ (- 1 1) 3) 'val 'next) ;; works
+'(compile '(< 2 3) 'val 'next) ;; works
 
 ;; Application Compiled
 '(compile '((lambda (x) 2) 5) 'val 'next) ;; works
@@ -95,12 +96,22 @@
            n
            (count (- n 1))))
       (count 2))
-  'val 'next)
+  'val 'next) ;; works
+
+'(compile
+ '(begin
+    (define (factorial n)
+    (if (= n 1)
+        1
+        (* (factorial (- n 1)) n)))
+    (factorial 5))
+ 'val
+ 'next) ;; works
 
 '(compile
   '(begin
     (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
-    (fib 6)) 'val 'next)
+    (fib 2)) 'val 'next) ;; TODO prints -1
 
 
 (define (decorate-main-instructions instruction-list)

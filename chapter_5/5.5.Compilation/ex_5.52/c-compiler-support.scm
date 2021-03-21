@@ -653,15 +653,8 @@ linkage ☑
                   ;; tmp value is a LispObject
                   (append
                    (list
-                    (string-append INDENT
-                                   "LispObject* "
-                                   tmp-var-name
-                                   ";\n"
-                                   INDENT
-                                   tmp-var-name
-                                   " = "
-                                   (symbol->string first-reg)
-                                   ";\n"))
+                    (string-append INDENT "LispObject* " tmp-var-name ";\n")
+                    (string-append INDENT tmp-var-name " = " (symbol->string first-reg) ";\n"))
                    (main-instructions (statements seq1))
                    (list
                     (string-append INDENT

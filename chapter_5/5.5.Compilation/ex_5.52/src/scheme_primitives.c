@@ -199,6 +199,111 @@ LispObject* lisp_sym_eq(LispObject* o) {
     return res;
 }
 
+LispObject* lisp_num_less_than(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (arg1->NumberVal < arg2->NumberVal) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+LispObject* lisp_num_greater_than(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (arg1->NumberVal > arg2->NumberVal) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+
+LispObject* lisp_num_less_or_equal_than(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (arg1->NumberVal <= arg2->NumberVal) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+LispObject* lisp_num_greater_or_equal_than(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *arg2, *res;
+
+    /* the car of arglist */
+    arg1 = o->CarPointer;
+    assert(arg1->type == NUMBER);
+
+    /* the cadr of arglist */
+    arg2 = o->CdrPointer;
+    assert(o->type == PAIR);
+    arg2 = arg2->CarPointer;
+    assert(arg2->type == NUMBER);
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    if (arg1->NumberVal >= arg2->NumberVal) {
+        res->BoolVal = true;
+    }
+    else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
 LispObject* lisp_check_null(LispObject* o) {
     assert(o->type == PAIR);
     LispObject* res;
@@ -279,6 +384,30 @@ LispObject SymEq = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "eq?",
     .PrimitiveFun = &lisp_sym_eq,
+};
+
+LispObject NumLessThan = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "<",
+    .PrimitiveFun = &lisp_num_less_than,
+};
+
+LispObject NumLessOrEqualThan = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "<=",
+    .PrimitiveFun = &lisp_num_less_or_equal_than,
+};
+
+LispObject NumGreaterThan = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = ">",
+    .PrimitiveFun = &lisp_num_greater_than,
+};
+
+LispObject NumGreaterOrEqualThan = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = ">=",
+    .PrimitiveFun = &lisp_num_greater_or_equal_than,
 };
 
 

@@ -90,6 +90,10 @@ Environment* environment_init(void) {
     environment_add(env_out, Div.SymbolVal, &Div);
     environment_add(env_out, NumEq.SymbolVal, &NumEq);
     environment_add(env_out, SymEq.SymbolVal, &SymEq);
+    environment_add(env_out, NumLessThan.SymbolVal, &NumLessThan);
+    environment_add(env_out, NumLessOrEqualThan.SymbolVal, &NumLessOrEqualThan);
+    environment_add(env_out, NumGreaterThan.SymbolVal, &NumGreaterThan);
+    environment_add(env_out, NumGreaterOrEqualThan.SymbolVal, &NumGreaterOrEqualThan);
     environment_add(env_out, NullCheck.SymbolVal, &NullCheck); 
 
     return env_out;
