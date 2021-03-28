@@ -88,10 +88,9 @@
 '(compile '((lambda () 2)) 'val 'next) ;; works
 '(compile '(begin
              (define n 5)
-             (display n)
-             ((lambda (n) (+ n 1)) 3.14)
-             (display n)
-             ) 'val 'next)
+             (display ((lambda (n) (+ n 1)) 3.14)) ;; 4.14
+             (display n) ;; 5
+             ) 'val 'next) ;; works
 
 
 ;; Recursive Functions
@@ -110,14 +109,14 @@
     (if (= n 1)
         1
         (* (factorial (- n 1)) n)))
-    (factorial 5))
+    (display (factorial 5)))
  'val
  'next) ;; works
 
 '(compile
   '(begin
     (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
-    (fib 2)) 'val 'next) ;; TODO prints -1
+    (display (fib 6))) 'val 'next) ;; works
 
 
 (define (decorate-main-instructions instruction-list)

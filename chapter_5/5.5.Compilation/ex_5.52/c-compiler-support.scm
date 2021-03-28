@@ -352,7 +352,7 @@ linkage ☑
         (operand-codes
          (map (lambda (operand) (compile operand 'val 'next))
               (operands expr))))
-    (preserving '(env continue)
+    (preserving '(env)
      proc-code
      (preserving '(proc continue)
       (construct-arglist operand-codes)
@@ -414,8 +414,8 @@ linkage ☑
       ;;        printf("I am compiled\n");
       ;;    }
       (make-instruction-sequence
-       '(proc argl) ;; needs
-       '(list target) ;; modifies
+       '(proc argl env) ;; needs
+       '(list target env) ;; modifies
        (list ;; instructions
         (string-append INDENT "if (proc->type == PRIMITIVE_PROC) {\n") ;; primitive case
         (string-append INDENT INDENT (symbol->string target) " = apply(proc, argl);\n")
@@ -524,7 +524,6 @@ linkage ☑
   (memq reg (registers-modified seq)))
 
 (define (append-instruction-sequences . seqs)
-  ;;(display "Called!") (display seqs) (newline)
   (define (append-2-sequences seq1 seq2)
     (make-instruction-sequence
      (list-union (registers-needed seq1)
@@ -532,7 +531,6 @@ linkage ☑
                                   (registers-modified seq1)))
      (list-union (registers-modified seq1)
                  (registers-modified seq2))
-     ;;(append (statements seq1) (statements seq2)))) 
      (append (main-instructions (statements seq1))
              (main-instructions (statements seq2))
              (auxiliary-instructions (statements seq1))
