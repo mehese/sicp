@@ -194,7 +194,6 @@
         ((assignment? exp)
          (eval-assignment exp env))
         ((definition? exp)
-         (display "I am a definition ")
          (eval-definition exp env))
         ((if? exp) 
          (eval-if exp env))
@@ -217,8 +216,7 @@
                    (operands exp) 
                    env)))
         (else
-         (error "Unknown expression 
-                 type: EVAL" exp))))
+         (error "Unknown expression type: EVAL" exp))))
 
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
@@ -326,8 +324,7 @@
             (if (null? rest)
                 (sequence->exp 
                  (cond-actions first))
-                (error "ELSE clause isn't 
-                        last: COND->IF"
+                (error "ELSE clause isn't last: COND->IF"
                        clauses))
             (make-if (cond-predicate first)
                      (sequence->exp 
@@ -393,8 +390,8 @@
 (define (make-variable-definition variable definition)
   (list 'define variable definition))
 
-(define input-prompt  ";;; M-Eval input:")
-(define output-prompt ";;; M-Eval value:")
+(define input-prompt  'input:)
+(define output-prompt 'output:)
 
 (define (user-print object)
   (if (compound-procedure? object)

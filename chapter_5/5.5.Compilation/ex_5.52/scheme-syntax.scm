@@ -29,6 +29,15 @@
 (define (display? exp)
   (tagged-list? exp 'display))
 
+(define (newline? exp)
+  (and (tagged-list? exp 'newline) (= 1 (length exp))))
+
+(define (read? exp)
+  (and (tagged-list? exp 'read) (= 1 (length exp))))
+
+(define (error? exp)
+  (tagged-list? exp 'error))
+
 (define (assignment-variable exp) (cadr exp))
 
 (define (assignment-value exp) (caddr exp))

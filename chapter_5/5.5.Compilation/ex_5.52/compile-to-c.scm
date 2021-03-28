@@ -18,27 +18,8 @@
 ;;;;;;;;
 (include "scheme-syntax.scm")
 (include "../machine.scm")
-(include "../eceval-support.scm")
 (include "c-compiler-support.scm")
 (include "metacircular-scheme.scm")
-
-;; any old value to create the variable so that
-;;  compile-and-go and/or start-eceval can set! it.
-(set! the-global-environment '())
-
-;; Modification of section 4.1.4 procedure
-;; **replaces version in syntax file
-(set! user-print
-      (lambda
-          ( object)
-        (cond ((compound-procedure? object)
-               (display (list 'compound-procedure
-                              (procedure-parameters object)
-                              (procedure-body object)
-                              '<procedure-env>)))
-              ((compiled-procedure? object)
-               (display '<compiled-procedure>))
-              (else (display object)))))
 
 ;; self evaluating
 '(compile 2 'val 'next)
@@ -118,6 +99,66 @@
     (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
     (display (fib 6))) 'val 'next) ;; works
 
+;; Some pre-requisites (newlines, errors, readlines)
+
+'(compile '(begin (display 'newline-below) (newline) (display 'newline-above)) 'val 'next)  ;; works
+
+'(compile '(begin (display (read))) 'val 'next) ;; works
+
+'(compile
+ '(begin
+    (define (echo-loop)
+      (let ((input (read)))
+        (display input)
+        (newline))
+      (echo-loop))
+    (echo-loop)) 'val 'next) ;; works
+
+'(compile
+  '(begin
+     (error "ELSE clause isn't 
+                        last: COND->IF"
+            clauses)
+     (error "Unknown expression 
+                 type: EVAL" exp)
+     (error "Too many arguments supplied" 
+            vars 
+            vals)
+     (error "Too few arguments supplied" 
+            vars 
+            vals)
+     (error "Unbound variable" var)
+     (error "Unknown procedure type: APPLY" procedure)
+     (error "Unbound variable: SET!" var)
+     ) 'val 'next) ;; works [but with ugly spaces]
+
+'(compile '(begin ;; More complicated echo
+             (define input-prompt  'input:)
+             (define output-prompt 'output:)
+
+             (define (user-print object)
+               (display object))
+             
+             (define (prompt-for-input string)
+               (newline) (newline) 
+               (display string) (newline))
+
+             (define (echo-loop)
+               (prompt-for-input input-prompt)
+               (let ((input (read)))
+                 (let ((output input))
+                   (announce-output output-prompt)
+                   (user-print output)))
+               (echo-loop))
+
+             (define (announce-output string)
+               (newline) (display string) (newline))
+
+             (echo-loop)
+             )
+          'val 'next) ;; works
+
+;; TODO: list, apply-primitive, check all primitives
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following

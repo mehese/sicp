@@ -48,6 +48,12 @@
          (compile-definition expr target linkage))
         ((display? expr)
          (compile-display expr target linkage))
+        ((newline? expr)
+         (compile-newline expr target linkage))
+        ((read? expr)
+         (compile-read expr target linkage))
+        ((error? expr)
+         (compile-error expr target linkage))
         ((if? expr) (compile-if expr target linkage))
         ((lambda? expr) (compile-lambda expr target linkage))
         ((begin? expr)
@@ -182,6 +188,33 @@
      linkage
      (append-instruction-sequences eval-seq print-seq)
      )))
+
+(define (compile-newline expr target linkage)
+  (end-with-linkage
+   linkage
+  (make-instruction-sequence
+   '() '()
+   (list
+    (string-append INDENT "putchar(10);\n")))))
+
+(define (compile-read expr target linkage)
+  (end-with-linkage
+   linkage
+   (make-instruction-sequence
+    '() `(,target)
+    (list
+     (string-append INDENT (symbol->string target) " = read_and_parse_input();\n")
+     ))))
+
+(define (compile-error expr target linkage)
+  (end-with-linkage
+   linkage
+   (make-instruction-sequence
+    '() '()
+    (list
+     ;; C can't handle strings with silent newlines, also ignoring all the other error details
+     (string-append INDENT "printf(\"Error: " (string-replace (cadr expr) "\n" "") "\\n\");\n")
+     ))))
                     
 
 ;;;conditional expressions
