@@ -86,6 +86,12 @@
 '(compile '(begin (define (equals-2 x) (if (= x 2) 1 0)) (equals-2 3)) 'val 'next) ;; works
 '(compile '((lambda (x y z) (- x 1)) 5 6 7) 'val 'next) ;; works
 '(compile '((lambda () 2)) 'val 'next) ;; works
+'(compile '(begin
+             (define n 5)
+             (display n)
+             ((lambda (n) (+ n 1)) 3.14)
+             (display n)
+             ) 'val 'next)
 
 
 ;; Recursive Functions
@@ -125,7 +131,6 @@ int main() {
 
 ")
   (define POSTFIX "
-    print_lisp_object(val);
     putchar(10); /* print an extra newline */
     return EXIT_SUCCESS;
 };

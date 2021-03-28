@@ -46,6 +46,8 @@
          (compile-assignment expr target linkage))
         ((definition? expr)
          (compile-definition expr target linkage))
+        ((display? expr)
+         (compile-display expr target linkage))
         ((if? expr) (compile-if expr target linkage))
         ((lambda? expr) (compile-lambda expr target linkage))
         ((begin? expr)
@@ -171,6 +173,16 @@
          "\", val);\n")
         ))))))
 
+(define (compile-display expr target linkage)
+  (let
+      ((eval-seq  (compile (cadr expr) target linkage))
+       (print-seq (make-instruction-sequence '() '()
+                                             (list (string-append INDENT "print_lisp_object(" (symbol->string target) ");\n")))))
+    (end-with-linkage
+     linkage
+     (append-instruction-sequences eval-seq print-seq)
+     )))
+                    
 
 ;;;conditional expressions
 
