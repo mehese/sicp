@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -g
 
-all: clean scheme
+all: clean compiled_scheme
 
 scheme_primitives.o: src/scheme_primitives.c src/scheme_primitives.h
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -15,7 +15,7 @@ scheme_env.o: src/scheme_env.c src/scheme_env.h
 scheme_eval_apply.o: src/scheme_eval_apply.c src/scheme_eval_apply.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-scheme: src/compiled.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
+scheme: src/scheme.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 compiled_scheme: src/compiled.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
@@ -29,4 +29,4 @@ test: scheme_objects.o scheme_tests.o scheme_env.o scheme_primitives.o
 	$(CC) $^ -lcheck -lsubunit -lm -lpthread -lrt -o scheme_$@
 
 clean:
-	rm -rfv scheme scheme_test *.o *.scm~
+	rm -rfv scheme scheme_test compiled_scheme *.o *.scm~
