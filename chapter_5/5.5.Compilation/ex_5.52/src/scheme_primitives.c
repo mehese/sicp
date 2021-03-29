@@ -65,6 +65,22 @@ LispObject* lisp_cons(LispObject* o) {
     return new_obj;
 }
 
+LispObject* lisp_list(LispObject* o) {
+    LispObject* new_obj;
+
+    /* No arguments -- return NULL */
+    if (o->type == NIL) {
+        new_obj = &LispNull;
+
+    /* One argument -- return the arglist */
+    } else if (o->CdrPointer->type == NIL ) {
+        new_obj = o;
+    } else {
+        new_obj = cons(o->CarPointer, lisp_list(o->CdrPointer));
+    }
+    return new_obj;
+}
+
 LispObject* lisp_add(LispObject* o) {
     assert(o->type == PAIR);
     LispObject *arg1, *arg2, *res;
@@ -343,6 +359,13 @@ LispObject Cons = {
     .SymbolVal = "cons",
     .PrimitiveFun = &lisp_cons
 };
+
+LispObject List = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "list",
+    .PrimitiveFun = &lisp_list
+};
+
 
 LispObject NullCheck = {
     .type = PRIMITIVE_PROC,

@@ -39,6 +39,7 @@
 (define primitive-procedures
   (list (list 'car car)
         (list 'cdr cdr)
+        (list 'cadr cadr)
         (list 'cons cons)
         (list 'null? null?)
         ;; Let's get this done with
@@ -47,8 +48,10 @@
         (list '- -)
         (list '* *)
         (list '/ /)
-        (list 'true? true?)
-        #| add more primitives here |# ))
+        #| add more primitives here |#
+        (list 'list list)
+        ))
+
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
 
@@ -220,7 +223,7 @@
 
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
-        ((string? exp) true)
+        ;((string? exp) true) ;; No strings in my lisp
         (else false)))
 
 (define (variable? exp) (symbol? exp))

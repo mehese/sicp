@@ -65,7 +65,11 @@ LispObject* environment_lookup(Environment* env, char* name) {
         } 
     }
 
-    assert(output_obj != NULL);
+    if (output_obj == NULL) {
+        printf("Did not find %s in environment:\n", name);
+        print_environment(env);
+        exit(1);
+    }
 
     return output_obj;
 }
@@ -84,6 +88,7 @@ Environment* environment_init(void) {
     environment_add(env_out, Cdr.SymbolVal, &Cdr);
     environment_add(env_out, Cadr.SymbolVal, &Cadr);
     environment_add(env_out, Cons.SymbolVal, &Cons);
+    environment_add(env_out, List.SymbolVal, &List);
     environment_add(env_out, Add.SymbolVal, &Add);
     environment_add(env_out, Sub.SymbolVal, &Sub);
     environment_add(env_out, Mul.SymbolVal, &Mul);

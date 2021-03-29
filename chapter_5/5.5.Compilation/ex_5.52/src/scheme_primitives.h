@@ -14,6 +14,7 @@ extern LispObject Car;
 extern LispObject Cdr;
 extern LispObject Cadr;
 extern LispObject Cons;
+extern LispObject List;
 extern LispObject NullCheck;
 extern LispObject Add;
 extern LispObject Mul;

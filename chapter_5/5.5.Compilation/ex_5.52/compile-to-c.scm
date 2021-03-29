@@ -158,7 +158,24 @@
              )
           'val 'next) ;; works
 
-;; TODO: list, apply-primitive, check all primitives
+'(compile '(begin
+             (display (list 1 'a 2))
+             ) 'val 'next) ;; works
+
+'(compile '(begin
+             (display (list))
+             ) 'val 'next) ;; works
+
+'(compile '(begin
+             (display (list 3))
+             ) 'val 'next) ;; works
+
+;; TODO:
+;;   not, and
+;;   pair?, number?, symbol?,
+;;   apply [primitive]
+;;   length
+;;   set-car!, set-cdr!
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following
