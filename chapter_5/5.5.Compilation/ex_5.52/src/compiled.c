@@ -17,15 +17,8 @@ int main() {
 
     env = environment_init();
 
-    proc = environment_lookup(env, "list");
-    argl = &LispNull;
-    if (proc->type == PRIMITIVE_PROC) {
-        val = apply(proc, argl);
-    } else {
-        proc->CompiledFun();
-    };
+    val = parse_lisp_object_from_string("'()");
     print_lisp_object(val);
-
     putchar(10); /* print an extra newline */
     return EXIT_SUCCESS;
 };

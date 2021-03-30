@@ -38,6 +38,9 @@
 (define (error? exp)
   (tagged-list? exp 'error))
 
+(define (primitive-application? exp)
+  (tagged-list? exp 'apply))
+
 (define (assignment-variable exp) (cadr exp))
 
 (define (assignment-value exp) (caddr exp))

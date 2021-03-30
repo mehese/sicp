@@ -62,6 +62,8 @@
                            linkage))
         ((cond? expr) (compile (cond->if expr) target linkage))
         ((let? expr) (compile (let->combination expr) target linkage)) ;; Needed for ex 5.50
+        ((primitive-application? expr)
+         (compile-primitive-application expr target linkage))
         ((application? expr)
          (compile-application expr target linkage))
         (else
@@ -379,6 +381,22 @@ linkage ☑
 ;;;SECTION 5.5.3
 
 ;;;combinations
+
+(define (compile-primitive-application expr target linkage)
+  (let
+      ((proc-code (compile (operator (cdr expr)) 'proc 'next))
+       (operand-codes
+         (map (lambda (operand) (compile operand 'val 'next))
+              (operands (cdr expr)))))
+    (preserving '(env)
+     proc-code
+     (preserving '(proc continue)
+      (construct-arglist operand-codes)
+      (make-instruction-sequence
+       '(proc argl)
+       (list target)
+       (list
+        (string-append INDENT (symbol->string target) " = apply(proc," (symbol->string target)");\n")))))))
 
 (define (compile-application expr target linkage)
   (let ((proc-code (compile (operator expr) 'proc 'next))

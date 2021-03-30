@@ -170,10 +170,32 @@
              (display (list 3))
              ) 'val 'next) ;; works
 
+;;   apply [primitive]
+'(compile '(begin
+             (display (apply + (list 2 3)))
+             ) 'val 'next) ;; works
+
+'(compile '(begin
+             (display (apply + '(2 3)))
+             ) 'val 'next) ;; works
+
+'(compile '(begin
+             (display (apply list '(a b c)))
+             ) 'val 'next) ;; works
+
+'(compile '(begin
+             (display (apply list (list )))
+             ) 'val 'next) ;; works
+
+;; Fails for two reasons:
+;;  -- '() is a string literal, so when parsing it we cannot modify it
+'(compile '(begin
+             (display (apply list '()))
+             ) 'val 'next) 
+
 ;; TODO:
 ;;   not, and
-;;   pair?, number?, symbol?,
-;;   apply [primitive]
+;;   pair?, number?, symbol?
 ;;   length
 ;;   set-car!, set-cdr!
 
