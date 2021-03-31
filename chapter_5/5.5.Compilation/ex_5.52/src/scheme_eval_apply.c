@@ -116,7 +116,7 @@ LispObject* make_procedure(LispObject* exp, Environment* env) {
             output->CompoundFunArgNames[arg_i][char_i] = '\0';
         }
     arg_list = exp->CdrPointer->CarPointer;
-    assert(arg_list->type == PAIR);
+    assert((arg_list->type == PAIR) || (arg_list->type == NIL));
 
     /* Initialize the argument list (remember environment lookup is done on string) */
     LispObject *curr_lambda_arg, *rest_of_args; 

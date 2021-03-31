@@ -66,7 +66,8 @@
 '(compile '(begin (define (a x) (+ x 2)) (a 3)) 'val 'next) ;; works
 '(compile '(begin (define (equals-2 x) (if (= x 2) 1 0)) (equals-2 3)) 'val 'next) ;; works
 '(compile '((lambda (x y z) (- x 1)) 5 6 7) 'val 'next) ;; works
-'(compile '((lambda () 2)) 'val 'next) ;; works
+'(compile '(begin
+             (display ((lambda () 2)))) 'val 'next) ;; works
 '(compile '(begin
              (define n 5)
              (display ((lambda (n) (+ n 1)) 3.14)) ;; 4.14

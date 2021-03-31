@@ -262,8 +262,69 @@ LispObject* parse_input(char** tokens) {
     return output_obj;
 }
 
+char* replace_with_nil(char* original_string) {
+    char* out;
+    int original_length = strlen(original_string);
+    int spaces_to_add = 0;
+
+    for (size_t i=0; i<original_length; i++) {
+        if ((original_string[i  ] == '(') &&
+            (original_string[i+1] == ')') &&
+            ((i == 0) || (original_string[i-1] != '\''))) {
+            spaces_to_add += 1;
+        }
+
+    }
+
+    int new_length = original_length + spaces_to_add + 1;
+    out = malloc(new_length*sizeof(char));
+    assert(out != NULL);
+
+    size_t i = 0; // index to traverse original string
+    char* current_letter; // pointer used to create the new string
+
+    current_letter = out;
+    while (i < original_length) {
+        if ((original_string[i  ] == '\'') &&
+            (original_string[i+1] == '(' ) &&
+            (original_string[i+2] == ')' )) {
+            *current_letter = 'n';
+            current_letter++;
+            *current_letter = 'i';
+            current_letter++;
+            *current_letter = 'l';
+            current_letter++;
+            i = i+3;
+        }
+        else if ((original_string[i  ] == '(' ) &&
+                 (original_string[i+1] == ')' )) {
+            *current_letter = 'n';
+            current_letter++;
+            *current_letter = 'i';
+            current_letter++;
+            *current_letter = 'l';
+            current_letter++;
+            i = i+2;
+ 
+        } else {
+            *current_letter = original_string[i];
+            current_letter++;
+            i++;
+        }
+
+    }
+
+    out[new_length-1] = '\0'; 
+
+    return out;
+}
+
+
 char** input_to_tokens(char* input) {
-    int input_length = strlen(input);
+    char* input_with_nils;
+
+    input_with_nils = replace_with_nil(input);
+    int input_length = strlen(input_with_nils);
 
     int num_new_spaces = 0;
     int brackets_open = 0;
@@ -271,23 +332,15 @@ char** input_to_tokens(char* input) {
     // TODO: check for extra whitespace too
     // TODO: this fails when passed an expression like (lambda () 'hi) -- parser should accept () as valid input
     for (size_t i = 0; i < input_length; ++i) {
-        // Replace '() by nil in input -- ideally you wouldn't modify input, but
-        // let's first hack to the max and then think pretty stuff
-        if ((input[i  ] == '\'') && (input_length - i > 2) && 
-            (input[i+1] == '(' ) && (input[i+2] == ')')) {
-            input[i  ] = 'n';
-            input[i+1] = 'i';
-            input[i+2] = 'l';
-        }
-        // Quote that isn't the nil character
-        else if (input[i] == '\'') {
+        // Quote 
+        if (input_with_nils[i] == '\'') {
             num_new_spaces++;
         }
-        else if (input[i] == '(') {
+        else if (input_with_nils[i] == '(') {
             num_new_spaces++;
             brackets_open++;
         } 
-        if (input[i] == ')') {
+        if (input_with_nils[i] == ')') {
             num_new_spaces++;
             brackets_open--;
             // Quick sanity check: we should never close more brackets than we opened
@@ -308,7 +361,7 @@ char** input_to_tokens(char* input) {
     size_t j = 0;
     char current_char;
     for (size_t i = 0; i < input_length; ++i) {
-        current_char = input[i];
+        current_char = input_with_nils[i];
         if (current_char == '(') {
             cleaned_input[j] = current_char;
             cleaned_input[j+1] = ' ';
@@ -335,6 +388,8 @@ char** input_to_tokens(char* input) {
             ++j;
         }
     }
+
+    free(input_with_nils);
     //printf("Cleaned input: %sEND_INPUT\n", cleaned_input);
     
     return tokenize_string(cleaned_input);
