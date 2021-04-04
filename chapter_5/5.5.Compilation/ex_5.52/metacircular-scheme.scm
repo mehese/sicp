@@ -52,7 +52,14 @@
         (list 'list list)
         ))
 
+
+(define (tagged-list? exp tag)
+  (if (pair? exp)
+      (eq? (car exp) tag)
+      #f))
+
 (define (primitive-procedure? proc)
+  ;; TODO: Why does this die here
   (tagged-list? proc 'primitive))
 
 (define (primitive-procedure-names)
@@ -232,10 +239,6 @@
 
 (define (variable? exp) (symbol? exp))
 
-(define (tagged-list? exp tag)
-  (if (pair? exp)
-      (eq? (car exp) tag)
-      #f))
 
 ;; Fails because read and parse input does not wrap quote
 ;(define (quoted? exp)

@@ -22,42 +22,42 @@ void entry71(void);
 void entry79(void);
 void entry87(void);
 void entry149(void);
-void entry153(void);
-void entry157(void);
-void entry158(void);
-void entry169(void);
-void entry173(void);
-void entry174(void);
-void entry183(void);
+void entry162(void);
+void entry166(void);
+void entry170(void);
+void entry171(void);
+void entry182(void);
+void entry186(void);
 void entry187(void);
-void entry191(void);
-void entry195(void);
-void entry223(void);
-void entry258(void);
-void entry262(void);
-void entry266(void);
-void entry267(void);
-void entry268(void);
-void entry319(void);
-void entry320(void);
-void entry350(void);
-void entry351(void);
-void entry352(void);
-void entry391(void);
-void entry415(void);
-void entry416(void);
-void entry417(void);
-void entry456(void);
-void entry480(void);
-void entry484(void);
-void entry488(void);
-void entry492(void);
-void entry496(void);
-void entry500(void);
-void entry536(void);
-void entry648(void);
+void entry196(void);
+void entry200(void);
+void entry204(void);
+void entry208(void);
+void entry236(void);
+void entry271(void);
+void entry275(void);
+void entry279(void);
+void entry280(void);
+void entry281(void);
+void entry332(void);
+void entry333(void);
+void entry363(void);
+void entry364(void);
+void entry365(void);
+void entry404(void);
+void entry428(void);
+void entry429(void);
+void entry430(void);
+void entry469(void);
+void entry493(void);
+void entry497(void);
+void entry501(void);
+void entry505(void);
+void entry509(void);
+void entry513(void);
+void entry549(void);
 void entry661(void);
-void entry665(void);
+void entry674(void);
 void entry678(void);
 void entry682(void);
 void entry686(void);
@@ -350,67 +350,71 @@ int main() {
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
     val->CompiledFun = &entry149;
+    environment_add(env, "tagged-list?", val);
+    val = create_empty_lisp_object(COMPILED_PROCEDURE);
+    val->CompoundFunEnvironment = env;
+    val->CompiledFun = &entry162;
     environment_add(env, "primitive-procedure?", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry153;
+    val->CompiledFun = &entry166;
     environment_add(env, "primitive-procedure-names", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry157;
+    val->CompiledFun = &entry170;
     environment_add(env, "primitive-procedure-objects", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry169;
+    val->CompiledFun = &entry182;
     environment_add(env, "primitive-implementation", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry173;
+    val->CompiledFun = &entry186;
     environment_add(env, "apply-in-underlying-scheme", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry174;
+    val->CompiledFun = &entry187;
     environment_add(env, "apply-primitive-procedure", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry183;
+    val->CompiledFun = &entry196;
     environment_add(env, "make-frame", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry187;
+    val->CompiledFun = &entry200;
     environment_add(env, "frame-variables", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry191;
+    val->CompiledFun = &entry204;
     environment_add(env, "frame-values", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry195;
+    val->CompiledFun = &entry208;
     environment_add(env, "add-binding-to-frame!", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry223;
+    val->CompiledFun = &entry236;
     environment_add(env, "extend-environment", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry258;
+    val->CompiledFun = &entry271;
     environment_add(env, "enclosing-environment", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry262;
+    val->CompiledFun = &entry275;
     environment_add(env, "first-frame", val);
     val = parse_lisp_object_from_string("()");
     environment_add(env, "the-empty-environment", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry266;
+    val->CompiledFun = &entry279;
     environment_add(env, "define-variable!", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry319;
+    val->CompiledFun = &entry332;
     environment_add(env, "setup-environment", val);
-    Environment* tmp_349;
-    tmp_349 = environment_copy(env);
+    Environment* tmp_362;
+    tmp_362 = environment_copy(env);
     proc = environment_lookup(env, "setup-environment");
     argl = &LispNull;
     if (proc->type == PRIMITIVE_PROC) {
@@ -418,56 +422,52 @@ int main() {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_349);
+    env = environment_copy(tmp_362);
     environment_add(env, "the-global-environment", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry350;
+    val->CompiledFun = &entry363;
     environment_add(env, "lookup-variable-value", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry415;
+    val->CompiledFun = &entry428;
     environment_add(env, "set-variable-value!", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry480;
+    val->CompiledFun = &entry493;
     environment_add(env, "compound-procedure?", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry484;
+    val->CompiledFun = &entry497;
     environment_add(env, "procedure-body", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry488;
+    val->CompiledFun = &entry501;
     environment_add(env, "procedure-parameters", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry492;
+    val->CompiledFun = &entry505;
     environment_add(env, "make-procedure", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry496;
+    val->CompiledFun = &entry509;
     environment_add(env, "procedure-environment", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry500;
+    val->CompiledFun = &entry513;
     environment_add(env, "m-apply", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry536;
+    val->CompiledFun = &entry549;
     environment_add(env, "eval", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry648;
+    val->CompiledFun = &entry661;
     environment_add(env, "self-evaluating?", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry661;
+    val->CompiledFun = &entry674;
     environment_add(env, "variable?", val);
-    val = create_empty_lisp_object(COMPILED_PROCEDURE);
-    val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry665;
-    environment_add(env, "tagged-list?", val);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
     val->CompiledFun = &entry678;
@@ -959,6 +959,51 @@ void entry87(void) {
 };
 void entry149(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
+    environment_add(env, "exp", argl->CarPointer);
+    argl = argl->CdrPointer;
+    environment_add(env, "tag", argl->CarPointer);
+    argl = argl->CdrPointer;
+    Environment* tmp_161;
+    tmp_161 = environment_copy(env);
+    proc = environment_lookup(env, "pair?");
+    val = environment_lookup(env, "exp");
+    argl = cons(val, &LispNull);
+    if (proc->type == PRIMITIVE_PROC) {
+        val = apply(proc, argl);
+    } else {
+        proc->CompiledFun();
+    };
+    env = environment_copy(tmp_161);
+    if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
+        proc = environment_lookup(env, "eq?");
+        LispObject* tmp_160;
+        tmp_160 = proc;
+        val = environment_lookup(env, "tag");
+        argl = cons(val, &LispNull);
+        LispObject* tmp_156;
+        tmp_156 = argl;
+        proc = environment_lookup(env, "car");
+        val = environment_lookup(env, "exp");
+        argl = cons(val, &LispNull);
+        if (proc->type == PRIMITIVE_PROC) {
+            val = apply(proc, argl);
+        } else {
+            proc->CompiledFun();
+        };
+        argl = tmp_156;
+        argl = cons(val, argl);
+        proc = tmp_160;
+        if (proc->type == PRIMITIVE_PROC) {
+            val = apply(proc, argl);
+        } else {
+            proc->CompiledFun();
+        };
+    } else {
+        val = create_lisp_atom_from_string("#f");
+    };
+};
+void entry162(void) {
+    env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "proc", argl->CarPointer);
     argl = argl->CdrPointer;
     proc = environment_lookup(env, "tagged-list?");
@@ -972,7 +1017,7 @@ void entry149(void) {
         proc->CompiledFun();
     };
 };
-void entry153(void) {
+void entry166(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     proc = environment_lookup(env, "map");
     val = environment_lookup(env, "primitive-procedures");
@@ -985,14 +1030,14 @@ void entry153(void) {
         proc->CompiledFun();
     };
 };
-void entry157(void) {
+void entry170(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     proc = environment_lookup(env, "map");
     val = environment_lookup(env, "primitive-procedures");
     argl = cons(val, &LispNull);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry158;
+    val->CompiledFun = &entry171;
     argl = cons(val, argl);
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
@@ -1000,13 +1045,13 @@ void entry157(void) {
         proc->CompiledFun();
     };
 };
-void entry158(void) {
+void entry171(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "proc", argl->CarPointer);
     argl = argl->CdrPointer;
     proc = environment_lookup(env, "list");
-    LispObject* tmp_165;
-    tmp_165 = proc;
+    LispObject* tmp_178;
+    tmp_178 = proc;
     proc = environment_lookup(env, "cadr");
     val = environment_lookup(env, "proc");
     argl = cons(val, &LispNull);
@@ -1018,14 +1063,14 @@ void entry158(void) {
     argl = cons(val, &LispNull);
     val = parse_lisp_object_from_string("primitive");
     argl = cons(val, argl);
-    proc = tmp_165;
+    proc = tmp_178;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry169(void) {
+void entry182(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "proc", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1038,7 +1083,7 @@ void entry169(void) {
         proc->CompiledFun();
     };
 };
-void entry173(void) {
+void entry186(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "proc", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1049,19 +1094,19 @@ void entry173(void) {
     argl = cons(val, &LispNull);
     val = apply(proc,val);
 };
-void entry174(void) {
+void entry187(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "proc", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "args", argl->CarPointer);
     argl = argl->CdrPointer;
     proc = environment_lookup(env, "apply-in-underlying-scheme");
-    LispObject* tmp_182;
-    tmp_182 = proc;
+    LispObject* tmp_195;
+    tmp_195 = proc;
     val = environment_lookup(env, "args");
     argl = cons(val, &LispNull);
-    LispObject* tmp_178;
-    tmp_178 = argl;
+    LispObject* tmp_191;
+    tmp_191 = argl;
     proc = environment_lookup(env, "primitive-implementation");
     val = environment_lookup(env, "proc");
     argl = cons(val, &LispNull);
@@ -1070,16 +1115,16 @@ void entry174(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_178;
+    argl = tmp_191;
     argl = cons(val, argl);
-    proc = tmp_182;
+    proc = tmp_195;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry183(void) {
+void entry196(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "variables", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1096,7 +1141,7 @@ void entry183(void) {
         proc->CompiledFun();
     };
 };
-void entry187(void) {
+void entry200(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1109,7 +1154,7 @@ void entry187(void) {
         proc->CompiledFun();
     };
 };
-void entry191(void) {
+void entry204(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1122,7 +1167,7 @@ void entry191(void) {
         proc->CompiledFun();
     };
 };
-void entry195(void) {
+void entry208(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "var", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1130,48 +1175,9 @@ void entry195(void) {
     argl = argl->CdrPointer;
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_222;
-    tmp_222 = environment_copy(env);
+    Environment* tmp_235;
+    tmp_235 = environment_copy(env);
     proc = environment_lookup(env, "set-car!");
-    LispObject* tmp_208;
-    tmp_208 = proc;
-    Environment* tmp_204;
-    tmp_204 = environment_copy(env);
-    proc = environment_lookup(env, "cons");
-    LispObject* tmp_203;
-    tmp_203 = proc;
-    Environment* tmp_199;
-    tmp_199 = environment_copy(env);
-    proc = environment_lookup(env, "car");
-    val = environment_lookup(env, "frame");
-    argl = cons(val, &LispNull);
-    if (proc->type == PRIMITIVE_PROC) {
-        val = apply(proc, argl);
-    } else {
-        proc->CompiledFun();
-    };
-    argl = cons(val, &LispNull);
-    env = environment_copy(tmp_199);
-    val = environment_lookup(env, "var");
-    argl = cons(val, argl);
-    proc = tmp_203;
-    if (proc->type == PRIMITIVE_PROC) {
-        val = apply(proc, argl);
-    } else {
-        proc->CompiledFun();
-    };
-    argl = cons(val, &LispNull);
-    env = environment_copy(tmp_204);
-    val = environment_lookup(env, "frame");
-    argl = cons(val, argl);
-    proc = tmp_208;
-    if (proc->type == PRIMITIVE_PROC) {
-        val = apply(proc, argl);
-    } else {
-        proc->CompiledFun();
-    };
-    env = environment_copy(tmp_222);
-    proc = environment_lookup(env, "set-cdr!");
     LispObject* tmp_221;
     tmp_221 = proc;
     Environment* tmp_217;
@@ -1181,7 +1187,7 @@ void entry195(void) {
     tmp_216 = proc;
     Environment* tmp_212;
     tmp_212 = environment_copy(env);
-    proc = environment_lookup(env, "cdr");
+    proc = environment_lookup(env, "car");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
     if (proc->type == PRIMITIVE_PROC) {
@@ -1191,7 +1197,7 @@ void entry195(void) {
     };
     argl = cons(val, &LispNull);
     env = environment_copy(tmp_212);
-    val = environment_lookup(env, "val");
+    val = environment_lookup(env, "var");
     argl = cons(val, argl);
     proc = tmp_216;
     if (proc->type == PRIMITIVE_PROC) {
@@ -1209,8 +1215,47 @@ void entry195(void) {
     } else {
         proc->CompiledFun();
     };
+    env = environment_copy(tmp_235);
+    proc = environment_lookup(env, "set-cdr!");
+    LispObject* tmp_234;
+    tmp_234 = proc;
+    Environment* tmp_230;
+    tmp_230 = environment_copy(env);
+    proc = environment_lookup(env, "cons");
+    LispObject* tmp_229;
+    tmp_229 = proc;
+    Environment* tmp_225;
+    tmp_225 = environment_copy(env);
+    proc = environment_lookup(env, "cdr");
+    val = environment_lookup(env, "frame");
+    argl = cons(val, &LispNull);
+    if (proc->type == PRIMITIVE_PROC) {
+        val = apply(proc, argl);
+    } else {
+        proc->CompiledFun();
+    };
+    argl = cons(val, &LispNull);
+    env = environment_copy(tmp_225);
+    val = environment_lookup(env, "val");
+    argl = cons(val, argl);
+    proc = tmp_229;
+    if (proc->type == PRIMITIVE_PROC) {
+        val = apply(proc, argl);
+    } else {
+        proc->CompiledFun();
+    };
+    argl = cons(val, &LispNull);
+    env = environment_copy(tmp_230);
+    val = environment_lookup(env, "frame");
+    argl = cons(val, argl);
+    proc = tmp_234;
+    if (proc->type == PRIMITIVE_PROC) {
+        val = apply(proc, argl);
+    } else {
+        proc->CompiledFun();
+    };
 };
-void entry223(void) {
+void entry236(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "vars", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1218,13 +1263,13 @@ void entry223(void) {
     argl = argl->CdrPointer;
     environment_add(env, "base-env", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_257;
-    tmp_257 = environment_copy(env);
+    Environment* tmp_270;
+    tmp_270 = environment_copy(env);
     proc = environment_lookup(env, "=");
-    LispObject* tmp_235;
-    tmp_235 = proc;
-    Environment* tmp_231;
-    tmp_231 = environment_copy(env);
+    LispObject* tmp_248;
+    tmp_248 = proc;
+    Environment* tmp_244;
+    tmp_244 = environment_copy(env);
     proc = environment_lookup(env, "length");
     val = environment_lookup(env, "vals");
     argl = cons(val, &LispNull);
@@ -1234,9 +1279,9 @@ void entry223(void) {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    env = environment_copy(tmp_231);
-    LispObject* tmp_230;
-    tmp_230 = argl;
+    env = environment_copy(tmp_244);
+    LispObject* tmp_243;
+    tmp_243 = argl;
     proc = environment_lookup(env, "length");
     val = environment_lookup(env, "vars");
     argl = cons(val, &LispNull);
@@ -1245,23 +1290,23 @@ void entry223(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_230;
+    argl = tmp_243;
     argl = cons(val, argl);
-    proc = tmp_235;
+    proc = tmp_248;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_257);
+    env = environment_copy(tmp_270);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         proc = environment_lookup(env, "cons");
-        LispObject* tmp_243;
-        tmp_243 = proc;
+        LispObject* tmp_256;
+        tmp_256 = proc;
         val = environment_lookup(env, "base-env");
         argl = cons(val, &LispNull);
-        LispObject* tmp_239;
-        tmp_239 = argl;
+        LispObject* tmp_252;
+        tmp_252 = argl;
         proc = environment_lookup(env, "make-frame");
         val = environment_lookup(env, "vals");
         argl = cons(val, &LispNull);
@@ -1272,22 +1317,22 @@ void entry223(void) {
         } else {
             proc->CompiledFun();
         };
-        argl = tmp_239;
+        argl = tmp_252;
         argl = cons(val, argl);
-        proc = tmp_243;
+        proc = tmp_256;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
     } else {
-        Environment* tmp_256;
-    tmp_256 = environment_copy(env);
+        Environment* tmp_269;
+    tmp_269 = environment_copy(env);
         proc = environment_lookup(env, "<");
-        LispObject* tmp_255;
-        tmp_255 = proc;
-        Environment* tmp_251;
-    tmp_251 = environment_copy(env);
+        LispObject* tmp_268;
+        tmp_268 = proc;
+        Environment* tmp_264;
+    tmp_264 = environment_copy(env);
         proc = environment_lookup(env, "length");
         val = environment_lookup(env, "vals");
         argl = cons(val, &LispNull);
@@ -1297,9 +1342,9 @@ void entry223(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        env = environment_copy(tmp_251);
-        LispObject* tmp_250;
-        tmp_250 = argl;
+        env = environment_copy(tmp_264);
+        LispObject* tmp_263;
+        tmp_263 = argl;
         proc = environment_lookup(env, "length");
         val = environment_lookup(env, "vars");
         argl = cons(val, &LispNull);
@@ -1308,15 +1353,15 @@ void entry223(void) {
         } else {
             proc->CompiledFun();
         };
-        argl = tmp_250;
+        argl = tmp_263;
         argl = cons(val, argl);
-        proc = tmp_255;
+        proc = tmp_268;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_256);
+        env = environment_copy(tmp_269);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             printf("Error: Too many arguments supplied\n");
         } else {
@@ -1324,7 +1369,7 @@ void entry223(void) {
         };
     };
 };
-void entry258(void) {
+void entry271(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "env", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1337,7 +1382,7 @@ void entry258(void) {
         proc->CompiledFun();
     };
 };
-void entry262(void) {
+void entry275(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "env", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1350,7 +1395,7 @@ void entry262(void) {
         proc->CompiledFun();
     };
 };
-void entry266(void) {
+void entry279(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "var", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1360,9 +1405,9 @@ void entry266(void) {
     argl = argl->CdrPointer;
     proc = create_empty_lisp_object(COMPILED_PROCEDURE);
     proc->CompoundFunEnvironment = env;
-    proc->CompiledFun = &entry267;
-    LispObject* tmp_318;
-    tmp_318 = proc;
+    proc->CompiledFun = &entry280;
+    LispObject* tmp_331;
+    tmp_331 = proc;
     proc = environment_lookup(env, "first-frame");
     val = environment_lookup(env, "env");
     argl = cons(val, &LispNull);
@@ -1372,26 +1417,26 @@ void entry266(void) {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    proc = tmp_318;
+    proc = tmp_331;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry267(void) {
+void entry280(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry268;
+    val->CompiledFun = &entry281;
     environment_add(env, "scan", val);
     proc = environment_lookup(env, "scan");
-    LispObject* tmp_311;
-    tmp_311 = proc;
-    Environment* tmp_307;
-    tmp_307 = environment_copy(env);
+    LispObject* tmp_324;
+    tmp_324 = proc;
+    Environment* tmp_320;
+    tmp_320 = environment_copy(env);
     proc = environment_lookup(env, "frame-values");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -1401,9 +1446,9 @@ void entry267(void) {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    env = environment_copy(tmp_307);
-    LispObject* tmp_306;
-    tmp_306 = argl;
+    env = environment_copy(tmp_320);
+    LispObject* tmp_319;
+    tmp_319 = argl;
     proc = environment_lookup(env, "frame-variables");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -1412,23 +1457,23 @@ void entry267(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_306;
+    argl = tmp_319;
     argl = cons(val, argl);
-    proc = tmp_311;
+    proc = tmp_324;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry268(void) {
+void entry281(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "vars", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "vals", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_299;
-    tmp_299 = environment_copy(env);
+    Environment* tmp_312;
+    tmp_312 = environment_copy(env);
     proc = environment_lookup(env, "null?");
     val = environment_lookup(env, "vars");
     argl = cons(val, &LispNull);
@@ -1437,7 +1482,7 @@ void entry268(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_299);
+    env = environment_copy(tmp_312);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         proc = environment_lookup(env, "add-binding-to-frame!");
         val = environment_lookup(env, "frame");
@@ -1452,13 +1497,13 @@ void entry268(void) {
             proc->CompiledFun();
         };
     } else {
-        Environment* tmp_298;
-    tmp_298 = environment_copy(env);
+        Environment* tmp_311;
+    tmp_311 = environment_copy(env);
         proc = environment_lookup(env, "eq?");
-        LispObject* tmp_282;
-        tmp_282 = proc;
-        Environment* tmp_278;
-    tmp_278 = environment_copy(env);
+        LispObject* tmp_295;
+        tmp_295 = proc;
+        Environment* tmp_291;
+    tmp_291 = environment_copy(env);
         proc = environment_lookup(env, "car");
         val = environment_lookup(env, "vars");
         argl = cons(val, &LispNull);
@@ -1468,16 +1513,16 @@ void entry268(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        env = environment_copy(tmp_278);
+        env = environment_copy(tmp_291);
         val = environment_lookup(env, "var");
         argl = cons(val, argl);
-        proc = tmp_282;
+        proc = tmp_295;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_298);
+        env = environment_copy(tmp_311);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             proc = environment_lookup(env, "set-car!");
             val = environment_lookup(env, "val");
@@ -1491,10 +1536,10 @@ void entry268(void) {
             };
         } else {
             proc = environment_lookup(env, "scan");
-            LispObject* tmp_297;
-            tmp_297 = proc;
-            Environment* tmp_293;
-    tmp_293 = environment_copy(env);
+            LispObject* tmp_310;
+            tmp_310 = proc;
+            Environment* tmp_306;
+    tmp_306 = environment_copy(env);
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vals");
             argl = cons(val, &LispNull);
@@ -1504,9 +1549,9 @@ void entry268(void) {
                 proc->CompiledFun();
             };
             argl = cons(val, &LispNull);
-            env = environment_copy(tmp_293);
-            LispObject* tmp_292;
-            tmp_292 = argl;
+            env = environment_copy(tmp_306);
+            LispObject* tmp_305;
+            tmp_305 = argl;
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vars");
             argl = cons(val, &LispNull);
@@ -1515,9 +1560,9 @@ void entry268(void) {
             } else {
                 proc->CompiledFun();
             };
-            argl = tmp_292;
+            argl = tmp_305;
             argl = cons(val, argl);
-            proc = tmp_297;
+            proc = tmp_310;
             if (proc->type == PRIMITIVE_PROC) {
                 val = apply(proc, argl);
             } else {
@@ -1526,22 +1571,22 @@ void entry268(void) {
         };
     };
 };
-void entry319(void) {
+void entry332(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     proc = create_empty_lisp_object(COMPILED_PROCEDURE);
     proc->CompoundFunEnvironment = env;
-    proc->CompiledFun = &entry320;
-    LispObject* tmp_345;
-    tmp_345 = proc;
+    proc->CompiledFun = &entry333;
+    LispObject* tmp_358;
+    tmp_358 = proc;
     proc = environment_lookup(env, "extend-environment");
-    LispObject* tmp_341;
-    tmp_341 = proc;
+    LispObject* tmp_354;
+    tmp_354 = proc;
     val = environment_lookup(env, "the-empty-environment");
     argl = cons(val, &LispNull);
-    Environment* tmp_337;
-    tmp_337 = environment_copy(env);
-    LispObject* tmp_335;
-    tmp_335 = argl;
+    Environment* tmp_350;
+    tmp_350 = environment_copy(env);
+    LispObject* tmp_348;
+    tmp_348 = argl;
     proc = environment_lookup(env, "primitive-procedure-objects");
     argl = &LispNull;
     if (proc->type == PRIMITIVE_PROC) {
@@ -1549,11 +1594,11 @@ void entry319(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_335;
+    argl = tmp_348;
     argl = cons(val, argl);
-    env = environment_copy(tmp_337);
-    LispObject* tmp_336;
-    tmp_336 = argl;
+    env = environment_copy(tmp_350);
+    LispObject* tmp_349;
+    tmp_349 = argl;
     proc = environment_lookup(env, "primitive-procedure-names");
     argl = &LispNull;
     if (proc->type == PRIMITIVE_PROC) {
@@ -1561,28 +1606,28 @@ void entry319(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_336;
+    argl = tmp_349;
     argl = cons(val, argl);
-    proc = tmp_341;
+    proc = tmp_354;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    proc = tmp_345;
+    proc = tmp_358;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry320(void) {
+void entry333(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "initial-env", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_328;
-    tmp_328 = environment_copy(env);
+    Environment* tmp_341;
+    tmp_341 = environment_copy(env);
     proc = environment_lookup(env, "define-variable!");
     val = environment_lookup(env, "initial-env");
     argl = cons(val, &LispNull);
@@ -1595,9 +1640,9 @@ void entry320(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_328);
-    Environment* tmp_327;
-    tmp_327 = environment_copy(env);
+    env = environment_copy(tmp_341);
+    Environment* tmp_340;
+    tmp_340 = environment_copy(env);
     proc = environment_lookup(env, "define-variable!");
     val = environment_lookup(env, "initial-env");
     argl = cons(val, &LispNull);
@@ -1610,10 +1655,10 @@ void entry320(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_327);
+    env = environment_copy(tmp_340);
     val = environment_lookup(env, "initial-env");
 };
-void entry350(void) {
+void entry363(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "var", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1626,7 +1671,7 @@ void entry350(void) {
     putchar(10);
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry351;
+    val->CompiledFun = &entry364;
     environment_add(env, "env-loop", val);
     proc = environment_lookup(env, "env-loop");
     val = environment_lookup(env, "env");
@@ -1637,16 +1682,16 @@ void entry350(void) {
         proc->CompiledFun();
     };
 };
-void entry351(void) {
+void entry364(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "env", argl->CarPointer);
     argl = argl->CdrPointer;
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry352;
+    val->CompiledFun = &entry365;
     environment_add(env, "scan", val);
-    Environment* tmp_411;
-    tmp_411 = environment_copy(env);
+    Environment* tmp_424;
+    tmp_424 = environment_copy(env);
     proc = environment_lookup(env, "eq?");
     val = environment_lookup(env, "the-empty-environment");
     argl = cons(val, &LispNull);
@@ -1657,15 +1702,15 @@ void entry351(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_411);
+    env = environment_copy(tmp_424);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         printf("Error: Unbound variable\n");
     } else {
         proc = create_empty_lisp_object(COMPILED_PROCEDURE);
         proc->CompoundFunEnvironment = env;
-        proc->CompiledFun = &entry391;
-        LispObject* tmp_410;
-        tmp_410 = proc;
+        proc->CompiledFun = &entry404;
+        LispObject* tmp_423;
+        tmp_423 = proc;
         proc = environment_lookup(env, "first-frame");
         val = environment_lookup(env, "env");
         argl = cons(val, &LispNull);
@@ -1675,7 +1720,7 @@ void entry351(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        proc = tmp_410;
+        proc = tmp_423;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
@@ -1683,14 +1728,14 @@ void entry351(void) {
         };
     };
 };
-void entry352(void) {
+void entry365(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "vars", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "vals", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_387;
-    tmp_387 = environment_copy(env);
+    Environment* tmp_400;
+    tmp_400 = environment_copy(env);
     proc = environment_lookup(env, "null?");
     val = environment_lookup(env, "vars");
     argl = cons(val, &LispNull);
@@ -1699,11 +1744,11 @@ void entry352(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_387);
+    env = environment_copy(tmp_400);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         proc = environment_lookup(env, "env-loop");
-        LispObject* tmp_362;
-        tmp_362 = proc;
+        LispObject* tmp_375;
+        tmp_375 = proc;
         proc = environment_lookup(env, "enclosing-environment");
         val = environment_lookup(env, "env");
         argl = cons(val, &LispNull);
@@ -1713,20 +1758,20 @@ void entry352(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        proc = tmp_362;
+        proc = tmp_375;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
     } else {
-        Environment* tmp_386;
-    tmp_386 = environment_copy(env);
+        Environment* tmp_399;
+    tmp_399 = environment_copy(env);
         proc = environment_lookup(env, "eq?");
-        LispObject* tmp_370;
-        tmp_370 = proc;
-        Environment* tmp_366;
-    tmp_366 = environment_copy(env);
+        LispObject* tmp_383;
+        tmp_383 = proc;
+        Environment* tmp_379;
+    tmp_379 = environment_copy(env);
         proc = environment_lookup(env, "car");
         val = environment_lookup(env, "vars");
         argl = cons(val, &LispNull);
@@ -1736,16 +1781,16 @@ void entry352(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        env = environment_copy(tmp_366);
+        env = environment_copy(tmp_379);
         val = environment_lookup(env, "var");
         argl = cons(val, argl);
-        proc = tmp_370;
+        proc = tmp_383;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_386);
+        env = environment_copy(tmp_399);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             proc = environment_lookup(env, "car");
             val = environment_lookup(env, "vals");
@@ -1757,10 +1802,10 @@ void entry352(void) {
             };
         } else {
             proc = environment_lookup(env, "scan");
-            LispObject* tmp_385;
-            tmp_385 = proc;
-            Environment* tmp_381;
-    tmp_381 = environment_copy(env);
+            LispObject* tmp_398;
+            tmp_398 = proc;
+            Environment* tmp_394;
+    tmp_394 = environment_copy(env);
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vals");
             argl = cons(val, &LispNull);
@@ -1770,9 +1815,9 @@ void entry352(void) {
                 proc->CompiledFun();
             };
             argl = cons(val, &LispNull);
-            env = environment_copy(tmp_381);
-            LispObject* tmp_380;
-            tmp_380 = argl;
+            env = environment_copy(tmp_394);
+            LispObject* tmp_393;
+            tmp_393 = argl;
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vars");
             argl = cons(val, &LispNull);
@@ -1781,9 +1826,9 @@ void entry352(void) {
             } else {
                 proc->CompiledFun();
             };
-            argl = tmp_380;
+            argl = tmp_393;
             argl = cons(val, argl);
-            proc = tmp_385;
+            proc = tmp_398;
             if (proc->type == PRIMITIVE_PROC) {
                 val = apply(proc, argl);
             } else {
@@ -1792,15 +1837,15 @@ void entry352(void) {
         };
     };
 };
-void entry391(void) {
+void entry404(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
     proc = environment_lookup(env, "scan");
-    LispObject* tmp_403;
-    tmp_403 = proc;
-    Environment* tmp_399;
-    tmp_399 = environment_copy(env);
+    LispObject* tmp_416;
+    tmp_416 = proc;
+    Environment* tmp_412;
+    tmp_412 = environment_copy(env);
     proc = environment_lookup(env, "frame-values");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -1810,9 +1855,9 @@ void entry391(void) {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    env = environment_copy(tmp_399);
-    LispObject* tmp_398;
-    tmp_398 = argl;
+    env = environment_copy(tmp_412);
+    LispObject* tmp_411;
+    tmp_411 = argl;
     proc = environment_lookup(env, "frame-variables");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -1821,16 +1866,16 @@ void entry391(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_398;
+    argl = tmp_411;
     argl = cons(val, argl);
-    proc = tmp_403;
+    proc = tmp_416;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry415(void) {
+void entry428(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "var", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -1840,7 +1885,7 @@ void entry415(void) {
     argl = argl->CdrPointer;
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry416;
+    val->CompiledFun = &entry429;
     environment_add(env, "env-loop", val);
     proc = environment_lookup(env, "env-loop");
     val = environment_lookup(env, "env");
@@ -1851,16 +1896,16 @@ void entry415(void) {
         proc->CompiledFun();
     };
 };
-void entry416(void) {
+void entry429(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "env", argl->CarPointer);
     argl = argl->CdrPointer;
     val = create_empty_lisp_object(COMPILED_PROCEDURE);
     val->CompoundFunEnvironment = env;
-    val->CompiledFun = &entry417;
+    val->CompiledFun = &entry430;
     environment_add(env, "scan", val);
-    Environment* tmp_476;
-    tmp_476 = environment_copy(env);
+    Environment* tmp_489;
+    tmp_489 = environment_copy(env);
     proc = environment_lookup(env, "eq?");
     val = environment_lookup(env, "the-empty-environment");
     argl = cons(val, &LispNull);
@@ -1871,15 +1916,15 @@ void entry416(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_476);
+    env = environment_copy(tmp_489);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         printf("Error: Unbound variable: SET!\n");
     } else {
         proc = create_empty_lisp_object(COMPILED_PROCEDURE);
         proc->CompoundFunEnvironment = env;
-        proc->CompiledFun = &entry456;
-        LispObject* tmp_475;
-        tmp_475 = proc;
+        proc->CompiledFun = &entry469;
+        LispObject* tmp_488;
+        tmp_488 = proc;
         proc = environment_lookup(env, "first-frame");
         val = environment_lookup(env, "env");
         argl = cons(val, &LispNull);
@@ -1889,7 +1934,7 @@ void entry416(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        proc = tmp_475;
+        proc = tmp_488;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
@@ -1897,14 +1942,14 @@ void entry416(void) {
         };
     };
 };
-void entry417(void) {
+void entry430(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "vars", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "vals", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_452;
-    tmp_452 = environment_copy(env);
+    Environment* tmp_465;
+    tmp_465 = environment_copy(env);
     proc = environment_lookup(env, "null?");
     val = environment_lookup(env, "vars");
     argl = cons(val, &LispNull);
@@ -1913,11 +1958,11 @@ void entry417(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_452);
+    env = environment_copy(tmp_465);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         proc = environment_lookup(env, "env-loop");
-        LispObject* tmp_427;
-        tmp_427 = proc;
+        LispObject* tmp_440;
+        tmp_440 = proc;
         proc = environment_lookup(env, "enclosing-environment");
         val = environment_lookup(env, "env");
         argl = cons(val, &LispNull);
@@ -1927,20 +1972,20 @@ void entry417(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        proc = tmp_427;
+        proc = tmp_440;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
     } else {
-        Environment* tmp_451;
-    tmp_451 = environment_copy(env);
+        Environment* tmp_464;
+    tmp_464 = environment_copy(env);
         proc = environment_lookup(env, "eq?");
-        LispObject* tmp_435;
-        tmp_435 = proc;
-        Environment* tmp_431;
-    tmp_431 = environment_copy(env);
+        LispObject* tmp_448;
+        tmp_448 = proc;
+        Environment* tmp_444;
+    tmp_444 = environment_copy(env);
         proc = environment_lookup(env, "car");
         val = environment_lookup(env, "vars");
         argl = cons(val, &LispNull);
@@ -1950,16 +1995,16 @@ void entry417(void) {
             proc->CompiledFun();
         };
         argl = cons(val, &LispNull);
-        env = environment_copy(tmp_431);
+        env = environment_copy(tmp_444);
         val = environment_lookup(env, "var");
         argl = cons(val, argl);
-        proc = tmp_435;
+        proc = tmp_448;
         if (proc->type == PRIMITIVE_PROC) {
             val = apply(proc, argl);
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_451);
+        env = environment_copy(tmp_464);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             proc = environment_lookup(env, "set-car!");
             val = environment_lookup(env, "val");
@@ -1973,10 +2018,10 @@ void entry417(void) {
             };
         } else {
             proc = environment_lookup(env, "scan");
-            LispObject* tmp_450;
-            tmp_450 = proc;
-            Environment* tmp_446;
-    tmp_446 = environment_copy(env);
+            LispObject* tmp_463;
+            tmp_463 = proc;
+            Environment* tmp_459;
+    tmp_459 = environment_copy(env);
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vals");
             argl = cons(val, &LispNull);
@@ -1986,9 +2031,9 @@ void entry417(void) {
                 proc->CompiledFun();
             };
             argl = cons(val, &LispNull);
-            env = environment_copy(tmp_446);
-            LispObject* tmp_445;
-            tmp_445 = argl;
+            env = environment_copy(tmp_459);
+            LispObject* tmp_458;
+            tmp_458 = argl;
             proc = environment_lookup(env, "cdr");
             val = environment_lookup(env, "vars");
             argl = cons(val, &LispNull);
@@ -1997,9 +2042,9 @@ void entry417(void) {
             } else {
                 proc->CompiledFun();
             };
-            argl = tmp_445;
+            argl = tmp_458;
             argl = cons(val, argl);
-            proc = tmp_450;
+            proc = tmp_463;
             if (proc->type == PRIMITIVE_PROC) {
                 val = apply(proc, argl);
             } else {
@@ -2008,15 +2053,15 @@ void entry417(void) {
         };
     };
 };
-void entry456(void) {
+void entry469(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "frame", argl->CarPointer);
     argl = argl->CdrPointer;
     proc = environment_lookup(env, "scan");
-    LispObject* tmp_468;
-    tmp_468 = proc;
-    Environment* tmp_464;
-    tmp_464 = environment_copy(env);
+    LispObject* tmp_481;
+    tmp_481 = proc;
+    Environment* tmp_477;
+    tmp_477 = environment_copy(env);
     proc = environment_lookup(env, "frame-values");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -2026,9 +2071,9 @@ void entry456(void) {
         proc->CompiledFun();
     };
     argl = cons(val, &LispNull);
-    env = environment_copy(tmp_464);
-    LispObject* tmp_463;
-    tmp_463 = argl;
+    env = environment_copy(tmp_477);
+    LispObject* tmp_476;
+    tmp_476 = argl;
     proc = environment_lookup(env, "frame-variables");
     val = environment_lookup(env, "frame");
     argl = cons(val, &LispNull);
@@ -2037,16 +2082,16 @@ void entry456(void) {
     } else {
         proc->CompiledFun();
     };
-    argl = tmp_463;
+    argl = tmp_476;
     argl = cons(val, argl);
-    proc = tmp_468;
+    proc = tmp_481;
     if (proc->type == PRIMITIVE_PROC) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
     };
 };
-void entry480(void) {
+void entry493(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "p", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2061,7 +2106,7 @@ void entry480(void) {
         proc->CompiledFun();
     };
 };
-void entry484(void) {
+void entry497(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "p", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2074,7 +2119,7 @@ void entry484(void) {
         proc->CompiledFun();
     };
 };
-void entry488(void) {
+void entry501(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "p", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2087,7 +2132,7 @@ void entry488(void) {
         proc->CompiledFun();
     };
 };
-void entry492(void) {
+void entry505(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "parameters", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2110,7 +2155,7 @@ void entry492(void) {
         proc->CompiledFun();
     };
 };
-void entry496(void) {
+void entry509(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "p", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2123,14 +2168,14 @@ void entry496(void) {
         proc->CompiledFun();
     };
 };
-void entry500(void) {
+void entry513(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "procedure", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "arguments", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_535;
-    tmp_535 = environment_copy(env);
+    Environment* tmp_548;
+    tmp_548 = environment_copy(env);
     proc = environment_lookup(env, "primitive-procedure?");
     val = environment_lookup(env, "procedure");
     argl = cons(val, &LispNull);
@@ -2139,7 +2184,7 @@ void entry500(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_535);
+    env = environment_copy(tmp_548);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         proc = environment_lookup(env, "apply-primitive-procedure");
         val = environment_lookup(env, "arguments");
@@ -2152,8 +2197,8 @@ void entry500(void) {
             proc->CompiledFun();
         };
     } else {
-        Environment* tmp_534;
-    tmp_534 = environment_copy(env);
+        Environment* tmp_547;
+    tmp_547 = environment_copy(env);
         proc = environment_lookup(env, "compound-procedure?");
         val = environment_lookup(env, "procedure");
         argl = cons(val, &LispNull);
@@ -2162,18 +2207,18 @@ void entry500(void) {
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_534);
+        env = environment_copy(tmp_547);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             proc = environment_lookup(env, "eval-sequence");
-            LispObject* tmp_530;
-            tmp_530 = proc;
-            Environment* tmp_526;
-    tmp_526 = environment_copy(env);
+            LispObject* tmp_543;
+            tmp_543 = proc;
+            Environment* tmp_539;
+    tmp_539 = environment_copy(env);
             proc = environment_lookup(env, "extend-environment");
-            LispObject* tmp_524;
-            tmp_524 = proc;
-            Environment* tmp_520;
-    tmp_520 = environment_copy(env);
+            LispObject* tmp_537;
+            tmp_537 = proc;
+            Environment* tmp_533;
+    tmp_533 = environment_copy(env);
             proc = environment_lookup(env, "procedure-environment");
             val = environment_lookup(env, "procedure");
             argl = cons(val, &LispNull);
@@ -2183,11 +2228,11 @@ void entry500(void) {
                 proc->CompiledFun();
             };
             argl = cons(val, &LispNull);
-            env = environment_copy(tmp_520);
+            env = environment_copy(tmp_533);
             val = environment_lookup(env, "arguments");
             argl = cons(val, argl);
-            LispObject* tmp_519;
-            tmp_519 = argl;
+            LispObject* tmp_532;
+            tmp_532 = argl;
             proc = environment_lookup(env, "procedure-parameters");
             val = environment_lookup(env, "procedure");
             argl = cons(val, &LispNull);
@@ -2196,18 +2241,18 @@ void entry500(void) {
             } else {
                 proc->CompiledFun();
             };
-            argl = tmp_519;
+            argl = tmp_532;
             argl = cons(val, argl);
-            proc = tmp_524;
+            proc = tmp_537;
             if (proc->type == PRIMITIVE_PROC) {
                 val = apply(proc, argl);
             } else {
                 proc->CompiledFun();
             };
             argl = cons(val, &LispNull);
-            env = environment_copy(tmp_526);
-            LispObject* tmp_525;
-            tmp_525 = argl;
+            env = environment_copy(tmp_539);
+            LispObject* tmp_538;
+            tmp_538 = argl;
             proc = environment_lookup(env, "procedure-body");
             val = environment_lookup(env, "procedure");
             argl = cons(val, &LispNull);
@@ -2216,9 +2261,9 @@ void entry500(void) {
             } else {
                 proc->CompiledFun();
             };
-            argl = tmp_525;
+            argl = tmp_538;
             argl = cons(val, argl);
-            proc = tmp_530;
+            proc = tmp_543;
             if (proc->type == PRIMITIVE_PROC) {
                 val = apply(proc, argl);
             } else {
@@ -2242,14 +2287,14 @@ void entry500(void) {
         };
     };
 };
-void entry536(void) {
+void entry549(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "exp", argl->CarPointer);
     argl = argl->CdrPointer;
     environment_add(env, "env", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_647;
-    tmp_647 = environment_copy(env);
+    Environment* tmp_660;
+    tmp_660 = environment_copy(env);
     proc = environment_lookup(env, "self-evaluating?");
     val = environment_lookup(env, "exp");
     argl = cons(val, &LispNull);
@@ -2258,12 +2303,12 @@ void entry536(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_647);
+    env = environment_copy(tmp_660);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         val = environment_lookup(env, "exp");
     } else {
-        Environment* tmp_646;
-    tmp_646 = environment_copy(env);
+        Environment* tmp_659;
+    tmp_659 = environment_copy(env);
         proc = environment_lookup(env, "variable?");
         val = environment_lookup(env, "exp");
         argl = cons(val, &LispNull);
@@ -2272,7 +2317,7 @@ void entry536(void) {
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_646);
+        env = environment_copy(tmp_659);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             proc = environment_lookup(env, "lookup-variable-value");
             val = environment_lookup(env, "env");
@@ -2297,8 +2342,8 @@ void entry536(void) {
                 val = environment_lookup(env, "exp");
                 val = val->QuotePointer;
             } else {
-                Environment* tmp_645;
-    tmp_645 = environment_copy(env);
+                Environment* tmp_658;
+    tmp_658 = environment_copy(env);
                 proc = environment_lookup(env, "assignment?");
                 val = environment_lookup(env, "exp");
                 argl = cons(val, &LispNull);
@@ -2307,7 +2352,7 @@ void entry536(void) {
                 } else {
                     proc->CompiledFun();
                 };
-                env = environment_copy(tmp_645);
+                env = environment_copy(tmp_658);
                 if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                     proc = environment_lookup(env, "eval-assignment");
                     val = environment_lookup(env, "env");
@@ -2320,8 +2365,8 @@ void entry536(void) {
                         proc->CompiledFun();
                     };
                 } else {
-                    Environment* tmp_644;
-    tmp_644 = environment_copy(env);
+                    Environment* tmp_657;
+    tmp_657 = environment_copy(env);
                     proc = environment_lookup(env, "definition?");
                     val = environment_lookup(env, "exp");
                     argl = cons(val, &LispNull);
@@ -2330,7 +2375,7 @@ void entry536(void) {
                     } else {
                         proc->CompiledFun();
                     };
-                    env = environment_copy(tmp_644);
+                    env = environment_copy(tmp_657);
                     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                         proc = environment_lookup(env, "eval-definition");
                         val = environment_lookup(env, "env");
@@ -2343,8 +2388,8 @@ void entry536(void) {
                             proc->CompiledFun();
                         };
                     } else {
-                        Environment* tmp_643;
-    tmp_643 = environment_copy(env);
+                        Environment* tmp_656;
+    tmp_656 = environment_copy(env);
                         proc = environment_lookup(env, "if?");
                         val = environment_lookup(env, "exp");
                         argl = cons(val, &LispNull);
@@ -2353,7 +2398,7 @@ void entry536(void) {
                         } else {
                             proc->CompiledFun();
                         };
-                        env = environment_copy(tmp_643);
+                        env = environment_copy(tmp_656);
                         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                             proc = environment_lookup(env, "eval-if");
                             val = environment_lookup(env, "env");
@@ -2366,8 +2411,8 @@ void entry536(void) {
                                 proc->CompiledFun();
                             };
                         } else {
-                            Environment* tmp_642;
-    tmp_642 = environment_copy(env);
+                            Environment* tmp_655;
+    tmp_655 = environment_copy(env);
                             proc = environment_lookup(env, "lambda?");
                             val = environment_lookup(env, "exp");
                             argl = cons(val, &LispNull);
@@ -2376,17 +2421,17 @@ void entry536(void) {
                             } else {
                                 proc->CompiledFun();
                             };
-                            env = environment_copy(tmp_642);
+                            env = environment_copy(tmp_655);
                             if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                                 proc = environment_lookup(env, "make-procedure");
-                                LispObject* tmp_579;
-                                tmp_579 = proc;
+                                LispObject* tmp_592;
+                                tmp_592 = proc;
                                 val = environment_lookup(env, "env");
                                 argl = cons(val, &LispNull);
-                                Environment* tmp_575;
-    tmp_575 = environment_copy(env);
-                                LispObject* tmp_573;
-                                tmp_573 = argl;
+                                Environment* tmp_588;
+    tmp_588 = environment_copy(env);
+                                LispObject* tmp_586;
+                                tmp_586 = argl;
                                 proc = environment_lookup(env, "lambda-body");
                                 val = environment_lookup(env, "exp");
                                 argl = cons(val, &LispNull);
@@ -2395,11 +2440,11 @@ void entry536(void) {
                                 } else {
                                     proc->CompiledFun();
                                 };
-                                argl = tmp_573;
+                                argl = tmp_586;
                                 argl = cons(val, argl);
-                                env = environment_copy(tmp_575);
-                                LispObject* tmp_574;
-                                tmp_574 = argl;
+                                env = environment_copy(tmp_588);
+                                LispObject* tmp_587;
+                                tmp_587 = argl;
                                 proc = environment_lookup(env, "lambda-parameters");
                                 val = environment_lookup(env, "exp");
                                 argl = cons(val, &LispNull);
@@ -2408,17 +2453,17 @@ void entry536(void) {
                                 } else {
                                     proc->CompiledFun();
                                 };
-                                argl = tmp_574;
+                                argl = tmp_587;
                                 argl = cons(val, argl);
-                                proc = tmp_579;
+                                proc = tmp_592;
                                 if (proc->type == PRIMITIVE_PROC) {
                                     val = apply(proc, argl);
                                 } else {
                                     proc->CompiledFun();
                                 };
                             } else {
-                                Environment* tmp_641;
-    tmp_641 = environment_copy(env);
+                                Environment* tmp_654;
+    tmp_654 = environment_copy(env);
                                 proc = environment_lookup(env, "let?");
                                 val = environment_lookup(env, "exp");
                                 argl = cons(val, &LispNull);
@@ -2427,15 +2472,15 @@ void entry536(void) {
                                 } else {
                                     proc->CompiledFun();
                                 };
-                                env = environment_copy(tmp_641);
+                                env = environment_copy(tmp_654);
                                 if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                                     proc = environment_lookup(env, "eval");
-                                    LispObject* tmp_590;
-                                    tmp_590 = proc;
+                                    LispObject* tmp_603;
+                                    tmp_603 = proc;
                                     val = environment_lookup(env, "env");
                                     argl = cons(val, &LispNull);
-                                    LispObject* tmp_586;
-                                    tmp_586 = argl;
+                                    LispObject* tmp_599;
+                                    tmp_599 = argl;
                                     proc = environment_lookup(env, "let->combination");
                                     val = environment_lookup(env, "exp");
                                     argl = cons(val, &LispNull);
@@ -2444,17 +2489,17 @@ void entry536(void) {
                                     } else {
                                         proc->CompiledFun();
                                     };
-                                    argl = tmp_586;
+                                    argl = tmp_599;
                                     argl = cons(val, argl);
-                                    proc = tmp_590;
+                                    proc = tmp_603;
                                     if (proc->type == PRIMITIVE_PROC) {
                                         val = apply(proc, argl);
                                     } else {
                                         proc->CompiledFun();
                                     };
                                 } else {
-                                    Environment* tmp_640;
-    tmp_640 = environment_copy(env);
+                                    Environment* tmp_653;
+    tmp_653 = environment_copy(env);
                                     proc = environment_lookup(env, "begin?");
                                     val = environment_lookup(env, "exp");
                                     argl = cons(val, &LispNull);
@@ -2463,15 +2508,15 @@ void entry536(void) {
                                     } else {
                                         proc->CompiledFun();
                                     };
-                                    env = environment_copy(tmp_640);
+                                    env = environment_copy(tmp_653);
                                     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                                         proc = environment_lookup(env, "eval-sequence");
-                                        LispObject* tmp_601;
-                                        tmp_601 = proc;
+                                        LispObject* tmp_614;
+                                        tmp_614 = proc;
                                         val = environment_lookup(env, "env");
                                         argl = cons(val, &LispNull);
-                                        LispObject* tmp_597;
-                                        tmp_597 = argl;
+                                        LispObject* tmp_610;
+                                        tmp_610 = argl;
                                         proc = environment_lookup(env, "begin-actions");
                                         val = environment_lookup(env, "exp");
                                         argl = cons(val, &LispNull);
@@ -2480,17 +2525,17 @@ void entry536(void) {
                                         } else {
                                             proc->CompiledFun();
                                         };
-                                        argl = tmp_597;
+                                        argl = tmp_610;
                                         argl = cons(val, argl);
-                                        proc = tmp_601;
+                                        proc = tmp_614;
                                         if (proc->type == PRIMITIVE_PROC) {
                                             val = apply(proc, argl);
                                         } else {
                                             proc->CompiledFun();
                                         };
                                     } else {
-                                        Environment* tmp_639;
-    tmp_639 = environment_copy(env);
+                                        Environment* tmp_652;
+    tmp_652 = environment_copy(env);
                                         proc = environment_lookup(env, "cond?");
                                         val = environment_lookup(env, "exp");
                                         argl = cons(val, &LispNull);
@@ -2499,15 +2544,15 @@ void entry536(void) {
                                         } else {
                                             proc->CompiledFun();
                                         };
-                                        env = environment_copy(tmp_639);
+                                        env = environment_copy(tmp_652);
                                         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                                             proc = environment_lookup(env, "eval");
-                                            LispObject* tmp_612;
-                                            tmp_612 = proc;
+                                            LispObject* tmp_625;
+                                            tmp_625 = proc;
                                             val = environment_lookup(env, "env");
                                             argl = cons(val, &LispNull);
-                                            LispObject* tmp_608;
-                                            tmp_608 = argl;
+                                            LispObject* tmp_621;
+                                            tmp_621 = argl;
                                             proc = environment_lookup(env, "cond->if");
                                             val = environment_lookup(env, "exp");
                                             argl = cons(val, &LispNull);
@@ -2516,17 +2561,17 @@ void entry536(void) {
                                             } else {
                                                 proc->CompiledFun();
                                             };
-                                            argl = tmp_608;
+                                            argl = tmp_621;
                                             argl = cons(val, argl);
-                                            proc = tmp_612;
+                                            proc = tmp_625;
                                             if (proc->type == PRIMITIVE_PROC) {
                                                 val = apply(proc, argl);
                                             } else {
                                                 proc->CompiledFun();
                                             };
                                         } else {
-                                            Environment* tmp_638;
-    tmp_638 = environment_copy(env);
+                                            Environment* tmp_651;
+    tmp_651 = environment_copy(env);
                                             proc = environment_lookup(env, "application?");
                                             val = environment_lookup(env, "exp");
                                             argl = cons(val, &LispNull);
@@ -2535,20 +2580,20 @@ void entry536(void) {
                                             } else {
                                                 proc->CompiledFun();
                                             };
-                                            env = environment_copy(tmp_638);
+                                            env = environment_copy(tmp_651);
                                             if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                                                 proc = environment_lookup(env, "m-apply");
-                                                LispObject* tmp_637;
-                                                tmp_637 = proc;
-                                                Environment* tmp_633;
-    tmp_633 = environment_copy(env);
+                                                LispObject* tmp_650;
+                                                tmp_650 = proc;
+                                                Environment* tmp_646;
+    tmp_646 = environment_copy(env);
                                                 proc = environment_lookup(env, "list-of-values");
-                                                LispObject* tmp_631;
-                                                tmp_631 = proc;
+                                                LispObject* tmp_644;
+                                                tmp_644 = proc;
                                                 val = environment_lookup(env, "env");
                                                 argl = cons(val, &LispNull);
-                                                LispObject* tmp_627;
-                                                tmp_627 = argl;
+                                                LispObject* tmp_640;
+                                                tmp_640 = argl;
                                                 proc = environment_lookup(env, "operands");
                                                 val = environment_lookup(env, "exp");
                                                 argl = cons(val, &LispNull);
@@ -2557,25 +2602,25 @@ void entry536(void) {
                                                 } else {
                                                     proc->CompiledFun();
                                                 };
-                                                argl = tmp_627;
+                                                argl = tmp_640;
                                                 argl = cons(val, argl);
-                                                proc = tmp_631;
+                                                proc = tmp_644;
                                                 if (proc->type == PRIMITIVE_PROC) {
                                                     val = apply(proc, argl);
                                                 } else {
                                                     proc->CompiledFun();
                                                 };
                                                 argl = cons(val, &LispNull);
-                                                env = environment_copy(tmp_633);
-                                                LispObject* tmp_632;
-                                                tmp_632 = argl;
+                                                env = environment_copy(tmp_646);
+                                                LispObject* tmp_645;
+                                                tmp_645 = argl;
                                                 proc = environment_lookup(env, "eval");
-                                                LispObject* tmp_623;
-                                                tmp_623 = proc;
+                                                LispObject* tmp_636;
+                                                tmp_636 = proc;
                                                 val = environment_lookup(env, "env");
                                                 argl = cons(val, &LispNull);
-                                                LispObject* tmp_619;
-                                                tmp_619 = argl;
+                                                LispObject* tmp_632;
+                                                tmp_632 = argl;
                                                 proc = environment_lookup(env, "operator");
                                                 val = environment_lookup(env, "exp");
                                                 argl = cons(val, &LispNull);
@@ -2584,17 +2629,17 @@ void entry536(void) {
                                                 } else {
                                                     proc->CompiledFun();
                                                 };
-                                                argl = tmp_619;
+                                                argl = tmp_632;
                                                 argl = cons(val, argl);
-                                                proc = tmp_623;
+                                                proc = tmp_636;
                                                 if (proc->type == PRIMITIVE_PROC) {
                                                     val = apply(proc, argl);
                                                 } else {
                                                     proc->CompiledFun();
                                                 };
-                                                argl = tmp_632;
+                                                argl = tmp_645;
                                                 argl = cons(val, argl);
-                                                proc = tmp_637;
+                                                proc = tmp_650;
                                                 if (proc->type == PRIMITIVE_PROC) {
                                                     val = apply(proc, argl);
                                                 } else {
@@ -2614,12 +2659,12 @@ void entry536(void) {
         };
     };
 };
-void entry648(void) {
+void entry661(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "exp", argl->CarPointer);
     argl = argl->CdrPointer;
-    Environment* tmp_660;
-    tmp_660 = environment_copy(env);
+    Environment* tmp_673;
+    tmp_673 = environment_copy(env);
     proc = environment_lookup(env, "eq?");
     val = create_lisp_atom_from_string("#t");
     argl = cons(val, &LispNull);
@@ -2630,12 +2675,12 @@ void entry648(void) {
     } else {
         proc->CompiledFun();
     };
-    env = environment_copy(tmp_660);
+    env = environment_copy(tmp_673);
     if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
         val = create_lisp_atom_from_string("#t");
     } else {
-        Environment* tmp_659;
-    tmp_659 = environment_copy(env);
+        Environment* tmp_672;
+    tmp_672 = environment_copy(env);
         proc = environment_lookup(env, "eq?");
         val = create_lisp_atom_from_string("#f");
         argl = cons(val, &LispNull);
@@ -2646,12 +2691,12 @@ void entry648(void) {
         } else {
             proc->CompiledFun();
         };
-        env = environment_copy(tmp_659);
+        env = environment_copy(tmp_672);
         if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
             val = create_lisp_atom_from_string("#t");
         } else {
-            Environment* tmp_658;
-    tmp_658 = environment_copy(env);
+            Environment* tmp_671;
+    tmp_671 = environment_copy(env);
             proc = environment_lookup(env, "number?");
             val = environment_lookup(env, "exp");
             argl = cons(val, &LispNull);
@@ -2660,7 +2705,7 @@ void entry648(void) {
             } else {
                 proc->CompiledFun();
             };
-            env = environment_copy(tmp_658);
+            env = environment_copy(tmp_671);
             if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
                 val = create_lisp_atom_from_string("#t");
             } else {
@@ -2669,7 +2714,7 @@ void entry648(void) {
         };
     };
 };
-void entry661(void) {
+void entry674(void) {
     env = environment_copy(proc->CompoundFunEnvironment);
     environment_add(env, "exp", argl->CarPointer);
     argl = argl->CdrPointer;
@@ -2680,51 +2725,6 @@ void entry661(void) {
         val = apply(proc, argl);
     } else {
         proc->CompiledFun();
-    };
-};
-void entry665(void) {
-    env = environment_copy(proc->CompoundFunEnvironment);
-    environment_add(env, "exp", argl->CarPointer);
-    argl = argl->CdrPointer;
-    environment_add(env, "tag", argl->CarPointer);
-    argl = argl->CdrPointer;
-    Environment* tmp_677;
-    tmp_677 = environment_copy(env);
-    proc = environment_lookup(env, "pair?");
-    val = environment_lookup(env, "exp");
-    argl = cons(val, &LispNull);
-    if (proc->type == PRIMITIVE_PROC) {
-        val = apply(proc, argl);
-    } else {
-        proc->CompiledFun();
-    };
-    env = environment_copy(tmp_677);
-    if ((val->type != BOOLEAN) || (val->BoolVal == true) ) {
-        proc = environment_lookup(env, "eq?");
-        LispObject* tmp_676;
-        tmp_676 = proc;
-        val = environment_lookup(env, "tag");
-        argl = cons(val, &LispNull);
-        LispObject* tmp_672;
-        tmp_672 = argl;
-        proc = environment_lookup(env, "car");
-        val = environment_lookup(env, "exp");
-        argl = cons(val, &LispNull);
-        if (proc->type == PRIMITIVE_PROC) {
-            val = apply(proc, argl);
-        } else {
-            proc->CompiledFun();
-        };
-        argl = tmp_672;
-        argl = cons(val, argl);
-        proc = tmp_676;
-        if (proc->type == PRIMITIVE_PROC) {
-            val = apply(proc, argl);
-        } else {
-            proc->CompiledFun();
-        };
-    } else {
-        val = create_lisp_atom_from_string("#f");
     };
 };
 void entry678(void) {
