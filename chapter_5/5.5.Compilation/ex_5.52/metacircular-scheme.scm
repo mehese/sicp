@@ -50,6 +50,7 @@
         (list '/ /)
         #| add more primitives here |#
         (list 'list list)
+        (list '< <)
         ))
 
 
@@ -131,7 +132,6 @@
   (setup-environment))
 
 (define (lookup-variable-value var env)
-  (display 'looking-up) (display var) (newline)
   (define (env-loop env)
     (define (scan vars vals)
       (cond ((null? vars)

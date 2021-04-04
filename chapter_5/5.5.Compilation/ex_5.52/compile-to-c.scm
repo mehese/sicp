@@ -8,19 +8,12 @@
                              write
                              format))
 
-;;(#%require (only racket/string string-replace))
-;; I think it's ok to use functions instead of labels
-;; if the register is continue, use a function
-;; if it's next, don't use a function
-;; all functions will be type LispObject
-;; if they modify a registry, instead of save/restore just use
-;;   function variables (abuse the C stack)
-
-;;;;;;;;
 (include "scheme-syntax.scm")
 (include "../machine.scm")
 (include "c-compiler-support.scm")
 (include "metacircular-scheme.scm")
+
+;; TEST CASES
 
 ;; self evaluating
 '(compile 2 'val 'next)
@@ -88,17 +81,14 @@
 
 '(compile
  '(begin
-    (define (factorial n)
-    (if (= n 1)
-        1
-        (* (factorial (- n 1)) n)))
+    (define (factorial n) (if (= n 1) 1 (* (factorial (- n 1)) n)))
     (display (factorial 5)))
  'val
- 'next) ;; works
+ 'next) ;; works (compiled + metacircular compiled)
 
 '(begin
     (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
-    (display (fib 6))) ;; works
+    (display (fib 6))) ;; works (compiled + metacircular compiled)
 
 ;; Some pre-requisites (newlines, errors, readlines)
 
@@ -237,6 +227,8 @@
 
     (echo-loop)) ;; works when inputting 'a or ''a or '(a b c) or ''(a b c)
 
+;; END TEST CASES
+
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following
@@ -332,6 +324,8 @@ Environment *env;
   ;;(system "./compiled_scheme")
   'Done
   )
+
+(compile-and-go METACIRCULAR-CODE)
     
     
 
