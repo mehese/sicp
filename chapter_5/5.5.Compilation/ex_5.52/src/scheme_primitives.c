@@ -362,6 +362,15 @@ LispObject* lisp_check_number(LispObject* o) {
     return res;
 }
 
+LispObject* lisp_check_symbol(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject* res;
+    assert (o->CdrPointer->type == NIL);
+    res = create_empty_lisp_object(BOOLEAN);
+    res->BoolVal = (o->CarPointer->type == SYMBOL) ? true : false;
+    return res;
+}
+
 
 /* End primitives */
 
@@ -413,6 +422,12 @@ LispObject NumberCheck = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "number?",
     .PrimitiveFun = &lisp_check_number
+};
+
+LispObject SymbolCheck = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "symbol?",
+    .PrimitiveFun = &lisp_check_symbol
 };
 
 LispObject Not = {
