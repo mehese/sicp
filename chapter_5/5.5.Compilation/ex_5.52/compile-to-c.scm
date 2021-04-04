@@ -210,6 +210,33 @@
 ;; Other primitives implemented: not, pair?, number?, symbol?, length
 ;;                               set-car!, set-cdr! [required fixes in eval)
 
+'(begin
+    (define input-prompt  'input:)
+    (define output-prompt 'output:)
+
+    (define (user-print object)
+      (display object))
+             
+    (define (prompt-for-input string)
+      (newline) (newline) 
+      (display string) (newline))
+
+    (define (echo-loop)
+      (prompt-for-input input-prompt)
+      (let ((input (read)))
+        (let ((output input))
+          (announce-output output-prompt)
+          (display 'is-quoted) (display (quoted? output)) (newline)
+          (display 'original-output) (display output) (newline)
+          (display 'unquoted-output) (display (unquote output)) (newline)
+          ))
+      (echo-loop))
+
+    (define (announce-output string)
+      (newline) (display string) (newline))
+
+    (echo-loop)) ;; works when inputting 'a or ''a or '(a b c) or ''(a b c)
+
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following
@@ -298,81 +325,6 @@ Environment *env;
     (display c-code-text file-pipe)
     (close-output-port file-pipe)))
 
-(define SILLY-CASE
-  '(begin
-;; Extra definitions that the compiler doesn't recognize
-(define (map fun lst)
-  (if (null? lst)
-      '()
-      (cons (fun (car lst))
-            (map fun (cdr lst)))))
-
-(define (caddr l)
-  (car (cdr (cdr l))))
-
-(define (cddr l)
-  (cdr (cdr l)))
-
-(define (cdadr l)
-  (cdr (cadr l)))
-
-(define (caadr l)
-  (car (cadr l)))
-
-(define (cdddr l)
-  (cdr (cddr l)))
-
-(define (cadddr l)
-  (car (cdddr l)))
-
-;; End extra definitions
-
-(define (true? x)
-  (not (eq? x #f)))
-
-(define (false? x)
-  (eq? x #f))
-
-(define primitive-procedures
-  (list (list 'car car)
-        (list 'cdr cdr)
-        (list 'cadr cadr)
-        (list 'cons cons)
-        (list 'null? null?)
-        ;; Let's get this done with
-        (list '= =)
-        (list '+ +)
-        (list '- -)
-        (list '* *)
-        (list '/ /)
-        #| add more primitives here |#
-        (list 'list list)
-        ))
-
-(define (primitive-procedure? proc)
-  (tagged-list? proc 'primitive))
-
-(define (primitive-procedure-names)
-  (map car primitive-procedures))
-
-(define (primitive-procedure-objects)
-  (map (lambda (proc) 
-         (list 'primitive (cadr proc)))
-       primitive-procedures))
-
-(define (primitive-implementation proc) 
-  (cadr proc))
-
-(define (apply-in-underlying-scheme proc args)
-  (apply proc args))
-
-(define (apply-primitive-procedure proc args)
-  (apply-in-underlying-scheme
-   (primitive-implementation proc) args))
-
-(display (apply-in-underlying-scheme +  (list 2 3)))
-     ))
-
 (define (compile-and-go scheme-code)
   (write-code scheme-code)
   (system "make")
@@ -380,6 +332,7 @@ Environment *env;
   ;;(system "./compiled_scheme")
   'Done
   )
+    
     
 
     

@@ -124,7 +124,7 @@
   (setup-environment))
 
 (define (lookup-variable-value var env)
-  (display 'looking-up) (display val) (newline)
+  (display 'looking-up) (display var) (newline)
   (define (env-loop env)
     (define (scan vars vals)
       (cond ((null? vars)
@@ -189,13 +189,12 @@
          (error "Unknown procedure type: APPLY" procedure))))
 
 (define (eval exp env)
-  (display 'in-eval)
   (cond ((self-evaluating? exp) 
          exp)
         ((variable? exp) 
          (lookup-variable-value exp env))
         ((quoted? exp) 
-         (text-of-quotation exp))
+         (unquote exp)) ;; modified for my parser's requirements
         ((assignment? exp)
          (eval-assignment exp env))
         ((definition? exp)
@@ -224,7 +223,10 @@
          (error "Unknown expression type: EVAL" exp))))
 
 (define (self-evaluating? exp)
-  (cond ((number? exp) #t)
+  (cond ;; Booleans
+        ((eq? exp #t) #t)
+        ((eq? exp #f) #t)
+        ((number? exp) #t)
         ;((string? exp) #t) ;; No strings in my lisp
         (else #f)))
 
@@ -235,11 +237,12 @@
       (eq? (car exp) tag)
       #f))
 
-(define (quoted? exp)
-  (tagged-list? exp 'quote))
-
-(define (text-of-quotation exp)
-  (cadr exp))
+;; Fails because read and parse input does not wrap quote
+;(define (quoted? exp)
+;  (tagged-list? exp 'quote))
+;
+;(define (text-of-quotation exp)
+;  (cadr exp))
 
 (define (assignment? exp)
   (tagged-list? exp 'set!))

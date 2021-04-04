@@ -91,6 +91,9 @@
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
 
+(define (check-if-expr-quoted? exp) (tagged-list? exp 'quoted?))
+(define (unquote? exp) (tagged-list? exp 'unquote))
+
 (define (no-operands? ops) (null? ops))
 (define (first-operand ops) (car ops))
 (define (rest-operands ops) (cdr ops))

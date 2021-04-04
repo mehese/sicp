@@ -52,6 +52,10 @@
          (compile-newline expr target linkage))
         ((read? expr)
          (compile-read expr target linkage))
+        ((check-if-expr-quoted? expr)
+         (compile-check-quoted expr target linkage))
+        ((unquote? expr)
+         (compile-unquote expr target linkage))
         ((error? expr)
          (compile-error expr target linkage))
         ((if? expr) (compile-if expr target linkage))
@@ -207,6 +211,38 @@
     (list
      (string-append INDENT (symbol->string target) " = read_and_parse_input();\n")
      ))))
+
+(define (compile-check-quoted expr target linkage)
+  (let
+      ((eval-seq  (compile (cadr expr) 'val linkage))
+       (res-seq (make-instruction-sequence '(val) (list target)
+                                             (list
+                                              (string-append INDENT "if (val->type == QUOTED) {\n")
+                                              (string-append INDENT INDENT (symbol->string target) " = create_empty_lisp_object(BOOLEAN);\n")
+                                              (string-append INDENT INDENT (symbol->string target) "->BoolVal = true;\n")
+                                              (string-append INDENT "} else {\n")
+                                              (string-append INDENT INDENT (symbol->string target) " = create_empty_lisp_object(BOOLEAN);\n")
+                                              (string-append INDENT INDENT (symbol->string target) "->BoolVal = false;\n")
+                                              (string-append INDENT "};\n")
+                                             ))))
+    (end-with-linkage
+     linkage
+     (append-instruction-sequences eval-seq res-seq)
+     )))
+
+(define (compile-unquote expr target linkage)
+  (let
+      ((eval-seq  (compile (cadr expr) 'val linkage))
+       (res-seq (make-instruction-sequence '(val) (list target)
+                                             (list
+                                              (string-append INDENT (symbol->string target) " = val->QuotePointer;\n")
+                                             ))))
+
+    ;(display eval-seq) (newline) (newline)
+    (end-with-linkage
+     linkage
+     (append-instruction-sequences eval-seq res-seq)
+     )))
 
 (define (compile-error expr target linkage)
   (end-with-linkage
