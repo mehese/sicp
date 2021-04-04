@@ -81,6 +81,23 @@ LispObject* lisp_list(LispObject* o) {
     return new_obj;
 }
 
+LispObject* lisp_not(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject *arg1, *res;
+
+    res = create_empty_lisp_object(BOOLEAN);
+
+    arg1 = o->CarPointer;
+    if ((arg1->type == BOOLEAN) && (arg1->BoolVal == false)) {
+        res->BoolVal = true;
+    } else {
+        res->BoolVal = false;
+    }
+
+    return res;
+}
+
+
 LispObject* lisp_add(LispObject* o) {
     assert(o->type == PAIR);
     LispObject *arg1, *arg2, *res;
@@ -371,6 +388,12 @@ LispObject NullCheck = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "null?",
     .PrimitiveFun = &lisp_check_null
+};
+
+LispObject Not = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "not",
+    .PrimitiveFun = &lisp_not
 };
 
 LispObject Add = {

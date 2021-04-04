@@ -89,6 +89,7 @@ Environment* environment_init(void) {
     environment_add(env_out, Cadr.SymbolVal, &Cadr);
     environment_add(env_out, Cons.SymbolVal, &Cons);
     environment_add(env_out, List.SymbolVal, &List);
+    environment_add(env_out, Not.SymbolVal, &Not);
     environment_add(env_out, Add.SymbolVal, &Add);
     environment_add(env_out, Sub.SymbolVal, &Sub);
     environment_add(env_out, Mul.SymbolVal, &Mul);

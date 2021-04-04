@@ -16,6 +16,7 @@ extern LispObject Cadr;
 extern LispObject Cons;
 extern LispObject List;
 extern LispObject NullCheck;
+extern LispObject Not;
 extern LispObject Add;
 extern LispObject Mul;
 extern LispObject Div;
