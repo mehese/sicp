@@ -32,7 +32,7 @@
 ;; variable
 '(compile 'a 'val 'next) ;; works
 '(compile '(begin (define a 2) a) 'val 'next) ;; works
-'(compile '(begin (define a 2) (define b 3) (+ a b)))
+'(compile '(begin (define a 2) (define b 3) (display (+ a b))) 'val 'next) ;; works
 
 ;; if
 '(compile '(if 2 2 3) 'val 'next) ;; works
@@ -192,10 +192,15 @@
              (display (apply list '()))
              ) 'val 'next) ;; works
 
-;; Other primitives implemented: not, pair?, number?, symbol?, length
+'(compile
+  '(begin
+     (define p (list 1 2 3 4))
+     (set-cdr! (cdr p) 'b)
+     (display p)) 'val 'next)  ;; works
 
-;; TODO:
-;;   set-car!, set-cdr!
+;; Other primitives implemented: not, pair?, number?, symbol?, length
+;;                               set-car!, set-cdr! [required fixes in eval)
+
 
 (define (decorate-main-instructions instruction-list)
   "Should do the following

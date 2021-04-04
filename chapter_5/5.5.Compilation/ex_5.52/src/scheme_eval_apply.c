@@ -53,8 +53,6 @@ bool is_lambda(LispObject* exp) {
     return is_tagged_with(exp, "lambda");
 }
 
-LispObject* eval_definition(LispObject* exp, Environment* env);
-
 LispObject* eval_definition(LispObject* exp, Environment* env) {
     LispObject *variable, *value, *evaluated_value;
 
@@ -147,26 +145,28 @@ LispObject* eval(LispObject* exp, Environment* env) {
     LispObject* output = NULL;
 
     if (self_evaluating(exp)) { 
-        // here you might be able to return directly, no cloning
-        output = exp;
+        return exp;
     }
     else if (is_variable(exp)) {
         output = environment_lookup(env, exp->SymbolVal); 
+        //return clone_lisp_object(output);
+        return output;
     } 
     else if (is_quote(exp)) {
         output = exp->QuotePointer;
+        return output;
     }
-    // TODO: Add assignment (set! command)
-    // TODO: Add `and` evaluation
-    // TODO: Add `or` evaluation
     else if (is_definition(exp)) {
         output = eval_definition(exp, env);
+        return output;
     }
     else if (is_if(exp)) {
         output = eval_if(exp, env);
+        return output;
     }
     else if (is_lambda(exp)) {
         output = make_procedure(exp, env);
+        return clone_lisp_object(output);
     }
     else if (exp->type == PAIR) {
         LispObject* operator;
@@ -174,13 +174,13 @@ LispObject* eval(LispObject* exp, Environment* env) {
         operator = eval(exp->CarPointer, env);
         list_of_operands = list_of_values(exp->CdrPointer, env);
         output = apply(operator, list_of_operands);
+        return output;
     }
     else {
-        printf("This isn't good!\n");
-        output = &LispNull;
+        printf("Eval failed, error!!\n");
+        exit(1);
     }
 
-    return clone_lisp_object(output);
 }
 
 LispObject* apply(LispObject* procedure, LispObject* arguments) {

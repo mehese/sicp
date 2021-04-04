@@ -35,14 +35,14 @@ LispObject* lisp_car(LispObject* o) {
     assert (o->type == PAIR);
     assert (o->CdrPointer->type == NIL);
     assert (o->CarPointer->type == PAIR);
-    return clone_lisp_object(o->CarPointer->CarPointer);
+    return o->CarPointer->CarPointer;
 }
 
 LispObject* lisp_cdr(LispObject* o) {
     assert (o->type == PAIR);
     assert (o->CdrPointer->type == NIL);
     assert (o->CarPointer->type == PAIR);
-    return clone_lisp_object(o->CarPointer->CdrPointer);
+    return o->CarPointer->CdrPointer;
 }
 
 LispObject* lisp_cadr(LispObject* o) {
@@ -50,7 +50,7 @@ LispObject* lisp_cadr(LispObject* o) {
     assert (o->CdrPointer->type == NIL);
     assert (o->CarPointer->type == PAIR);
     assert (o->CarPointer->CdrPointer->type == PAIR);
-    return clone_lisp_object(o->CarPointer->CdrPointer->CarPointer);
+    return o->CarPointer->CdrPointer->CarPointer;
 }
 
 LispObject* lisp_cons(LispObject* o) {
@@ -109,6 +109,31 @@ LispObject* lisp_list_length(LispObject* o) {
     return res;
 }
 
+LispObject* lisp_set_car(LispObject* o) {
+    LispObject *var_arg, *val_arg;
+    assert (o->type == PAIR);
+    var_arg = o->CarPointer;
+    assert (var_arg->type == PAIR);
+    assert (o->CdrPointer->type == PAIR);
+    assert (o->CdrPointer->CdrPointer->type == NIL);
+    val_arg = o->CdrPointer->CarPointer;
+    var_arg->CarPointer = val_arg;
+
+    return &LispNull;
+}
+
+LispObject* lisp_set_cdr(LispObject* o) {
+    LispObject *var_arg, *val_arg;
+    assert (o->type == PAIR);
+    var_arg = o->CarPointer;
+    assert (var_arg->type == PAIR);
+    assert (o->CdrPointer->type == PAIR);
+    assert (o->CdrPointer->CdrPointer->type == NIL);
+    val_arg = o->CdrPointer->CarPointer;
+    var_arg->CdrPointer = val_arg;
+
+    return &LispNull;
+}
 
 LispObject* lisp_not(LispObject* o) {
     assert(o->type == PAIR);
@@ -427,6 +452,18 @@ LispObject Cons = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "cons",
     .PrimitiveFun = &lisp_cons
+};
+
+LispObject SetCar = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "set-car!",
+    .PrimitiveFun = &lisp_set_car
+};
+
+LispObject SetCdr = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "set-cdr!",
+    .PrimitiveFun = &lisp_set_cdr
 };
 
 LispObject List = {
