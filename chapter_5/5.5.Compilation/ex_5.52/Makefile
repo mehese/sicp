@@ -1,24 +1,17 @@
 CC=gcc
 CFLAGS=-Wall -g
+OBJS=scheme_primitives.o scheme_objects.o scheme_env.o scheme_eval_apply.o
+SRC=src
 
 all: clean compiled_scheme
 
-scheme_primitives.o: src/scheme_primitives.c src/scheme_primitives.h
+%.o: $(SRC)/%.c $(SRC)/%.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-scheme_objects.o: src/scheme_objects.c src/scheme_objects.h
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-scheme_env.o: src/scheme_env.c src/scheme_env.h
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-scheme_eval_apply.o: src/scheme_eval_apply.c src/scheme_eval_apply.h
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-scheme: src/scheme.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
+scheme: $(SRC)/scheme.c $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiled_scheme: src/compiled.c scheme_objects.o scheme_env.o scheme_primitives.o scheme_eval_apply.o
+compiled_scheme: $(SRC)/compiled.c $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 
