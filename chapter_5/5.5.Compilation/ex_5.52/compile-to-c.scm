@@ -194,9 +194,10 @@
              (display (apply list '()))
              ) 'val 'next) 
 
+;; not, pair?
+
 ;; TODO:
-;;   not, and
-;;   pair?, number?, symbol?
+;;   number?, symbol?
 ;;   length
 ;;   set-car!, set-cdr!
 

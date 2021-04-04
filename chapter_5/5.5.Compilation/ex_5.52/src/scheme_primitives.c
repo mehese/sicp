@@ -97,7 +97,6 @@ LispObject* lisp_not(LispObject* o) {
     return res;
 }
 
-
 LispObject* lisp_add(LispObject* o) {
     assert(o->type == PAIR);
     LispObject *arg1, *arg2, *res;
@@ -342,9 +341,18 @@ LispObject* lisp_check_null(LispObject* o) {
     LispObject* res;
     assert (o->type == PAIR);
     assert (o->CdrPointer->type == NIL);
-    printf("Type is %d\n", o->CarPointer->type);
     res = create_empty_lisp_object(BOOLEAN);
     res->BoolVal = (o->CarPointer->type == NIL) ? true : false;
+    return res;
+}
+
+LispObject* lisp_check_pair(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject* res;
+    assert (o->type == PAIR);
+    assert (o->CdrPointer->type == NIL);
+    res = create_empty_lisp_object(BOOLEAN);
+    res->BoolVal = (o->CarPointer->type == PAIR) ? true : false;
     return res;
 }
 
@@ -383,11 +391,16 @@ LispObject List = {
     .PrimitiveFun = &lisp_list
 };
 
-
 LispObject NullCheck = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "null?",
     .PrimitiveFun = &lisp_check_null
+};
+
+LispObject PairCheck = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "pair?",
+    .PrimitiveFun = &lisp_check_pair
 };
 
 LispObject Not = {

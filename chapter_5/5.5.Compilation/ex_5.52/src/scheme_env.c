@@ -100,7 +100,8 @@ Environment* environment_init(void) {
     environment_add(env_out, NumLessOrEqualThan.SymbolVal, &NumLessOrEqualThan);
     environment_add(env_out, NumGreaterThan.SymbolVal, &NumGreaterThan);
     environment_add(env_out, NumGreaterOrEqualThan.SymbolVal, &NumGreaterOrEqualThan);
-    environment_add(env_out, NullCheck.SymbolVal, &NullCheck); 
+    environment_add(env_out, NullCheck.SymbolVal, &NullCheck);
+    environment_add(env_out, PairCheck.SymbolVal, &PairCheck);
 
     return env_out;
 }
