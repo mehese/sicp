@@ -102,6 +102,7 @@ Environment* environment_init(void) {
     environment_add(env_out, NumGreaterOrEqualThan.SymbolVal, &NumGreaterOrEqualThan);
     environment_add(env_out, NullCheck.SymbolVal, &NullCheck);
     environment_add(env_out, PairCheck.SymbolVal, &PairCheck);
+    environment_add(env_out, NumberCheck.SymbolVal, &NumberCheck);
 
     return env_out;
 }

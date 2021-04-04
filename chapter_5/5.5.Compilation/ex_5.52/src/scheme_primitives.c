@@ -320,7 +320,6 @@ LispObject* lisp_num_greater_or_equal_than(LispObject* o) {
 
     /* the cadr of arglist */
     arg2 = o->CdrPointer;
-    assert(o->type == PAIR);
     arg2 = arg2->CarPointer;
     assert(arg2->type == NUMBER);
 
@@ -339,7 +338,6 @@ LispObject* lisp_num_greater_or_equal_than(LispObject* o) {
 LispObject* lisp_check_null(LispObject* o) {
     assert(o->type == PAIR);
     LispObject* res;
-    assert (o->type == PAIR);
     assert (o->CdrPointer->type == NIL);
     res = create_empty_lisp_object(BOOLEAN);
     res->BoolVal = (o->CarPointer->type == NIL) ? true : false;
@@ -349,10 +347,18 @@ LispObject* lisp_check_null(LispObject* o) {
 LispObject* lisp_check_pair(LispObject* o) {
     assert(o->type == PAIR);
     LispObject* res;
-    assert (o->type == PAIR);
     assert (o->CdrPointer->type == NIL);
     res = create_empty_lisp_object(BOOLEAN);
     res->BoolVal = (o->CarPointer->type == PAIR) ? true : false;
+    return res;
+}
+
+LispObject* lisp_check_number(LispObject* o) {
+    assert(o->type == PAIR);
+    LispObject* res;
+    assert (o->CdrPointer->type == NIL);
+    res = create_empty_lisp_object(BOOLEAN);
+    res->BoolVal = (o->CarPointer->type == NUMBER) ? true : false;
     return res;
 }
 
@@ -401,6 +407,12 @@ LispObject PairCheck = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "pair?",
     .PrimitiveFun = &lisp_check_pair
+};
+
+LispObject NumberCheck = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "number?",
+    .PrimitiveFun = &lisp_check_number
 };
 
 LispObject Not = {
