@@ -15,6 +15,7 @@ extern LispObject Cdr;
 extern LispObject Cadr;
 extern LispObject Cons;
 extern LispObject List;
+extern LispObject ListLength;
 extern LispObject NullCheck;
 extern LispObject PairCheck;
 extern LispObject NumberCheck;

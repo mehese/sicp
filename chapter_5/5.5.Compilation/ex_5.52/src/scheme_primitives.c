@@ -81,6 +81,35 @@ LispObject* lisp_list(LispObject* o) {
     return new_obj;
 }
 
+LispObject* lisp_list_length(LispObject* o) {
+    assert(o->type == PAIR);
+
+    LispObject *res, *list_to_measure;
+    size_t arg_length;
+    bool end_of_list_found;
+
+    list_to_measure = o->CarPointer;
+
+    end_of_list_found = false;
+    arg_length = 0;
+
+    while (!end_of_list_found) {
+        if (list_to_measure->type == NIL) {
+            end_of_list_found = true;
+        } else {
+            assert(list_to_measure->type == PAIR);
+            // Cdr down the list
+            list_to_measure = list_to_measure->CdrPointer;
+            arg_length++;
+        }
+    }
+
+    res = create_empty_lisp_object(NUMBER);
+    res->NumberVal = arg_length;
+    return res;
+}
+
+
 LispObject* lisp_not(LispObject* o) {
     assert(o->type == PAIR);
     LispObject *arg1, *res;
@@ -404,6 +433,12 @@ LispObject List = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "list",
     .PrimitiveFun = &lisp_list
+};
+
+LispObject ListLength = {
+    .type = PRIMITIVE_PROC,
+    .SymbolVal = "length",
+    .PrimitiveFun = &lisp_list_length
 };
 
 LispObject NullCheck = {

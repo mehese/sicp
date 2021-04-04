@@ -188,17 +188,13 @@
              (display (apply list (list )))
              ) 'val 'next) ;; works
 
-;; Fails for two reasons:
-;;  -- '() is a string literal, so when parsing it we cannot modify it
 '(compile '(begin
              (display (apply list '()))
-             ) 'val 'next) 
+             ) 'val 'next) ;; works
 
-;; not, pair?, number?, symbol?
+;; Other primitives implemented: not, pair?, number?, symbol?, length
 
 ;; TODO:
-;; 
-;;   length
 ;;   set-car!, set-cdr!
 
 (define (decorate-main-instructions instruction-list)
