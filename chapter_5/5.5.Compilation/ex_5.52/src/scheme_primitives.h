@@ -28,7 +28,7 @@ extern LispObject Mul;
 extern LispObject Div;
 extern LispObject Sub;
 extern LispObject NumEq;
-extern LispObject SymEq;
+extern LispObject Eq;
 extern LispObject NumLessThan;
 extern LispObject NumLessOrEqualThan;
 extern LispObject NumGreaterThan;

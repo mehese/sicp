@@ -31,10 +31,10 @@
 ;; End extra definitions
 
 (define (true? x)
-  (not (eq? x false)))
+  (not (eq? x #f)))
 
 (define (false? x)
-  (eq? x false))
+  (eq? x #f))
 
 (define primitive-procedures
   (list (list 'car car)
@@ -116,14 +116,15 @@
           (primitive-procedure-names)
           (primitive-procedure-objects)
           the-empty-environment)))
-    (define-variable! 'true true initial-env)
-    (define-variable! 'false false initial-env)
+    (define-variable! 'true #t initial-env)
+    (define-variable! 'false #f initial-env)
     initial-env))
 
 (define the-global-environment 
   (setup-environment))
 
 (define (lookup-variable-value var env)
+  (display 'looking-up) (display val) (newline)
   (define (env-loop env)
     (define (scan vars vals)
       (cond ((null? vars)
@@ -188,6 +189,7 @@
          (error "Unknown procedure type: APPLY" procedure))))
 
 (define (eval exp env)
+  (display 'in-eval)
   (cond ((self-evaluating? exp) 
          exp)
         ((variable? exp) 
@@ -222,16 +224,16 @@
          (error "Unknown expression type: EVAL" exp))))
 
 (define (self-evaluating? exp)
-  (cond ((number? exp) true)
-        ;((string? exp) true) ;; No strings in my lisp
-        (else false)))
+  (cond ((number? exp) #t)
+        ;((string? exp) #t) ;; No strings in my lisp
+        (else #f)))
 
 (define (variable? exp) (symbol? exp))
 
 (define (tagged-list? exp tag)
   (if (pair? exp)
       (eq? (car exp) tag)
-      false))
+      #f))
 
 (define (quoted? exp)
   (tagged-list? exp 'quote))
@@ -276,7 +278,7 @@
 (define (if-alternative exp)
   (if (not (null? (cdddr exp)))
       (cadddr exp)
-      'false))
+      #f))
 
 (define (make-if predicate 
                  consequent 
@@ -320,7 +322,7 @@
   (expand-clauses (cond-clauses exp)))
 (define (expand-clauses clauses)
   (if (null? clauses)
-      'false     ; no else clause
+      #f     ; no else clause
       (let ((first (car clauses))
             (rest (cdr clauses)))
         (if (cond-else-clause? first)
@@ -422,4 +424,5 @@
 (define (announce-output string)
   (newline) (display string) (newline))
 
+(driver-loop)
 ))

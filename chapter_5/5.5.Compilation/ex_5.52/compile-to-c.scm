@@ -2,6 +2,7 @@
 
 (#%require racket/include)
 (#%require racket/string)
+(#%require racket/system)
 (#%require (only racket/base open-output-string
                              get-output-string
                              write
@@ -95,10 +96,9 @@
  'val
  'next) ;; works
 
-'(compile
-  '(begin
+'(begin
     (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
-    (display (fib 6))) 'val 'next) ;; works
+    (display (fib 6))) ;; works
 
 ;; Some pre-requisites (newlines, errors, readlines)
 
@@ -172,9 +172,9 @@
              ) 'val 'next) ;; works
 
 ;;   apply [primitive]
-'(compile '(begin
-             (display (apply + (list 2 3)))
-             ) 'val 'next) ;; works
+'(begin
+   (display (apply + (list 2 3)))
+   ) ;; works
 
 '(compile '(begin
              (display (apply + '(2 3)))
@@ -192,11 +192,20 @@
              (display (apply list '()))
              ) 'val 'next) ;; works
 
-'(compile
-  '(begin
+'(begin
      (define p (list 1 2 3 4))
      (set-cdr! (cdr p) 'b)
-     (display p)) 'val 'next)  ;; works
+     (display p))  ;; works
+
+'(begin
+   (define f #f)
+   (display 'check-shows-true)
+   (display (eq? f #f))
+   (newline)
+   (display 'check-shows-false)
+   (display (eq? f #t))
+   (newline));; works
+   
 
 ;; Other primitives implemented: not, pair?, number?, symbol?, length
 ;;                               set-car!, set-cdr! [required fixes in eval)
@@ -281,6 +290,96 @@ Environment *env;
 
 (define (code instruction-sequence)
   (display (instructions->C instruction-sequence)))
+
+(define (write-code scheme-code)
+  (let
+      ((file-pipe (open-output-file "src/compiled.c" #:exists 'replace))
+       (c-code-text (instructions->C (compile scheme-code 'val 'next))))
+    (display c-code-text file-pipe)
+    (close-output-port file-pipe)))
+
+(define SILLY-CASE
+  '(begin
+;; Extra definitions that the compiler doesn't recognize
+(define (map fun lst)
+  (if (null? lst)
+      '()
+      (cons (fun (car lst))
+            (map fun (cdr lst)))))
+
+(define (caddr l)
+  (car (cdr (cdr l))))
+
+(define (cddr l)
+  (cdr (cdr l)))
+
+(define (cdadr l)
+  (cdr (cadr l)))
+
+(define (caadr l)
+  (car (cadr l)))
+
+(define (cdddr l)
+  (cdr (cddr l)))
+
+(define (cadddr l)
+  (car (cdddr l)))
+
+;; End extra definitions
+
+(define (true? x)
+  (not (eq? x #f)))
+
+(define (false? x)
+  (eq? x #f))
+
+(define primitive-procedures
+  (list (list 'car car)
+        (list 'cdr cdr)
+        (list 'cadr cadr)
+        (list 'cons cons)
+        (list 'null? null?)
+        ;; Let's get this done with
+        (list '= =)
+        (list '+ +)
+        (list '- -)
+        (list '* *)
+        (list '/ /)
+        #| add more primitives here |#
+        (list 'list list)
+        ))
+
+(define (primitive-procedure? proc)
+  (tagged-list? proc 'primitive))
+
+(define (primitive-procedure-names)
+  (map car primitive-procedures))
+
+(define (primitive-procedure-objects)
+  (map (lambda (proc) 
+         (list 'primitive (cadr proc)))
+       primitive-procedures))
+
+(define (primitive-implementation proc) 
+  (cadr proc))
+
+(define (apply-in-underlying-scheme proc args)
+  (apply proc args))
+
+(define (apply-primitive-procedure proc args)
+  (apply-in-underlying-scheme
+   (primitive-implementation proc) args))
+
+(display (apply-in-underlying-scheme +  (list 2 3)))
+     ))
+
+(define (compile-and-go scheme-code)
+  (write-code scheme-code)
+  (system "make")
+  ;; Do not uncomment below for stuff that reads stdin
+  ;;(system "./compiled_scheme")
+  'Done
+  )
     
 
     

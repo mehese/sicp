@@ -259,28 +259,51 @@ LispObject* lisp_num_eq(LispObject* o) {
     return res;
 }
 
-LispObject* lisp_sym_eq(LispObject* o) {
+LispObject* lisp_eq(LispObject* o) {
     assert(o->type == PAIR);
     LispObject *arg1, *arg2, *res;
-
-    /* the car of arglist */
+    
     arg1 = o->CarPointer;
-    assert(arg1->type == SYMBOL);
 
     /* the cadr of arglist */
-    arg2 = o->CdrPointer;
-    assert(o->type == PAIR);
-    arg2 = arg2->CarPointer;
-    assert(arg2->type == SYMBOL);
+    assert(o->CdrPointer->type == PAIR);
+    arg2 = o->CdrPointer->CarPointer;
 
     res = create_empty_lisp_object(BOOLEAN);
 
-    if (strcmp(arg1->SymbolVal, arg2->SymbolVal) == 0) {
+    /* default return value */
+    res->BoolVal = false;
+    
+    /* In order for eq? to return true:
+     *
+     * - Both are Nil
+     * - Both are boolean and have the same value
+     * - Both are a symbol and have the same value
+     * - Both are a number and have the same value
+     */
+
+    if ((arg1->type == NIL) && (arg2->type == NIL)) {
         res->BoolVal = true;
     }
-    else {
-        res->BoolVal = false;
+
+    if ((arg1->type == BOOLEAN) &&
+        (arg2->type == BOOLEAN) &&
+        (arg1->BoolVal == arg2->BoolVal)) {
+        res->BoolVal = true;
     }
+ 
+    if ((arg1->type == SYMBOL) &&
+        (arg2->type == SYMBOL) &&
+        (strcmp(arg1->SymbolVal, arg2->SymbolVal) == 0)) {
+        res->BoolVal = true;
+    }
+
+    if ((arg1->type == NUMBER) &&
+        (arg2->type == NUMBER) &&
+        (fabs(arg1->NumberVal - arg2->NumberVal) <= FLOAT_TOL)) {
+        res->BoolVal = true;
+    }
+
 
     return res;
 }
@@ -538,10 +561,10 @@ LispObject NumEq = {
     .PrimitiveFun = &lisp_num_eq,
 };
 
-LispObject SymEq = {
+LispObject Eq = {
     .type = PRIMITIVE_PROC,
     .SymbolVal = "eq?",
-    .PrimitiveFun = &lisp_sym_eq,
+    .PrimitiveFun = &lisp_eq,
 };
 
 LispObject NumLessThan = {
